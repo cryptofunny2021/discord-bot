@@ -1,0 +1,19 @@
+overwrite: true
+generates:
+  generated/marketplace.graphql.ts:
+    schema: ${MARKETPLACE_URL}
+    documents: "src/graphql/marketplace/*.graphql.ts"
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-graphql-request"
+  generated/defined.graphql.ts:
+    schema: 
+      - ${DEFINED_URL}:
+          headers:
+            x-api-key: ${DEFINED_API_KEY}
+    documents: "src/graphql/defined/*.graphql.ts"
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-graphql-request"

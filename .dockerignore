@@ -1,0 +1,5 @@
+.env
+prisma/bot.db
+build
+generated
+node_modules
