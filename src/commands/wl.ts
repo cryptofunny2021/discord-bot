@@ -33,11 +33,8 @@ abstract class WL {
       const max = getRandom(15, 45);
       const seconds = getRandom(15, 46);
       const time = seconds * 1_000;
-      const minutes = getRandom(1, 6);
-      const delay = 0 // minutes * 60_000;
 
       const fields = [
-        { inline: true, name: "Delay", value: `${minutes} minutes` },
         { inline: true, name: "Max Spots", value: `${max}` },
         { inline: true, name: "Max Time", value: `${seconds} seconds` },
       ];
@@ -53,10 +50,9 @@ abstract class WL {
       });
 
       // Enjoyeer
-      const channel = client.channels.cache.get("905953472816484433") as TextChannel;
-
-      // Wait between 1-5 minutes before sending the message
-      await wait(delay);
+      const channel = client.channels.cache.get(
+        "905953472816484433"
+      ) as TextChannel;
 
       const message = await channel?.send({
         embeds: [
@@ -82,21 +78,27 @@ abstract class WL {
         .map((reaction) => reaction.users.cache.filter((user) => !user.bot))
         .flat();
 
-      await info.edit({
-        embeds: [
-          {
-            title: "Whitelist Status",
-            color: 0xcceedd,
-            fields: [
-              ...fields,
+      if (users.size > 0) {
+        try {
+          await info.edit({
+            embeds: [
               {
-                name: "Users",
-                value: users.map((user) => user.username).join(", "),
+                title: "Whitelist Status",
+                color: 0xcceedd,
+                fields: [
+                  ...fields,
+                  {
+                    name: "Users",
+                    value: users.map((user) => user.username).join(", "),
+                  },
+                ],
               },
             ],
-          },
-        ],
-      });
+          });
+        } catch (error) {
+          console.log("Error editing embed:", error);
+        }
+      }
 
       // Add `Next` role
       const role = command.message.guild?.roles.cache.find(
