@@ -50,9 +50,9 @@ abstract class WL {
         ],
       });
 
-      // Enjoyeer
+      // Reactions channel
       const channel = client.channels.cache.get(
-        "905953472816484433"
+        "925877130762539058"
       ) as TextChannel;
 
       const message = await channel?.send({
