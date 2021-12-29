@@ -38,8 +38,13 @@ const shorten = (value: string = "") =>
 
 @Discord()
 abstract class Smol {
-  @SimpleCommand("xxsmol")
+  @SimpleCommand("smol")
   async smol(command: SimpleCommandMessage) {
+    // Disabled everywhere for now
+    if (1 + 1 === 2) {
+      return;
+    }
+
     const message = command.message;
     const channel = message.guild?.channels.resolve(message.channelId);
 

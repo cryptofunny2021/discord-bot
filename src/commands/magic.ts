@@ -8,12 +8,6 @@ abstract class Magic {
   @SimpleCommand("magic")
   async magic(command: SimpleCommandMessage) {
     const { message } = command;
-    const { guild } = message;
-
-    if (!guild) {
-      return;
-    }
-
     const magic = snapshot(state);
 
     try {

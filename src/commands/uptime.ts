@@ -7,13 +7,6 @@ const now = Date.now();
 abstract class Uptime {
   @SimpleCommand("uptime")
   async uptime(command: SimpleCommandMessage) {
-    const { message } = command;
-    const { guild } = message;
-
-    if (!guild) {
-      return;
-    }
-
     try {
       await command.message.channel.send({
         embeds: [

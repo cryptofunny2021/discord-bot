@@ -26,6 +26,14 @@ async function smolbrainsStaked() {
 abstract class Staked {
   @SimpleCommand("staked")
   async staked(command: SimpleCommandMessage) {
+    if (
+      ![server.isSmolBodies, server.isSmolBrains].some((check) =>
+        check(command.message.guildId)
+      )
+    ) {
+      return;
+    }
+
     const message = command.message;
     const [, argument] = message.content.split(" ");
 
@@ -53,10 +61,6 @@ abstract class Staked {
                 const isSmolBrainsServer = server.isSmolBrains(
                   message.guild?.id
                 );
-
-                if (!isSmolBodiesServer && !isSmolBrainsServer) {
-                  return true;
-                }
 
                 return (
                   (item === "Smol Bodies" && isSmolBodiesServer) ||

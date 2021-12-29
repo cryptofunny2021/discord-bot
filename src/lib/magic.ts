@@ -29,7 +29,7 @@ async function fetch() {
     state.change24h = percent.format(body.pairMetadata?.priceChange ?? 0);
     state.timestamp = Date.now();
 
-    console.log(state.timestamp);
+    // console.log(state.timestamp);
     // const { market_data: data } = await got(
     //   "https://api.coingecko.com/api/v3/coins/arbitrum-one/contract/0x539bde0d7dbd336b79148aa742883198bbf60342"
     // ).json<{
