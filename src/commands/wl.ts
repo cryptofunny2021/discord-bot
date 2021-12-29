@@ -3,7 +3,7 @@ import * as user from "../lib/user.js";
 import { Discord, SimpleCommand, SimpleCommandMessage } from "discordx";
 
 function getRandom(min: number, max: number) {
-  return Math.random() * (max - min) + min;
+  return Math.floor(Math.random() * (max - min) + min);
 }
 
 async function wait(time: number) {
@@ -31,12 +31,13 @@ abstract class WL {
       const max = getRandom(15, 45);
       const seconds = getRandom(15, 46);
       const time = seconds * 1_000;
-      const delay = getRandom(1, 6) * 60_000;
+      const minutes = getRandom(1, 6);
+      const delay = minutes * 60_000;
 
       const fields = [
-        { inline: true, name: "Delay", value: `${delay}` },
+        { inline: true, name: "Delay", value: `${minutes} minutes` },
         { inline: true, name: "Max Spots", value: `${max}` },
-        { inline: true, name: "Max Time", value: `${seconds}` },
+        { inline: true, name: "Max Time", value: `${seconds} seconds` },
       ];
 
       const info = await command.message.channel.send({
