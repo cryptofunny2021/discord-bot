@@ -2,6 +2,7 @@ import * as server from "../lib/server.js";
 import * as user from "../lib/user.js";
 import { Discord, SimpleCommand, SimpleCommandMessage } from "discordx";
 import { TextChannel } from "discord.js";
+import { formatDistanceToNowStrict } from "date-fns";
 import client from "../lib/client.js";
 
 function getRandom(min: number, max: number) {
@@ -62,6 +63,7 @@ abstract class WL {
           },
         ],
       });
+      const start = Date.now();
 
       await message.react("👍");
       await message.awaitReactions({
@@ -71,6 +73,8 @@ abstract class WL {
         max,
         time,
       });
+
+      const value = formatDistanceToNowStrict(start, { addSuffix: true });
 
       await message.delete();
 
@@ -87,6 +91,7 @@ abstract class WL {
                 color: 0xcceedd,
                 fields: [
                   ...fields,
+                  { inline: true, name: "Filled", value },
                   {
                     name: "Users",
                     value: users.map((user) => user.username).join(", "),
