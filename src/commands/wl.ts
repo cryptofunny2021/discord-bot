@@ -57,7 +57,7 @@ abstract class WL {
       const message = await channel?.send({
         embeds: [
           {
-            description: "React to this message to get on the whitelist.",
+            description: "React to this message to see what is next.",
             color: 0xcceedd,
           },
         ],
