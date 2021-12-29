@@ -1,6 +1,8 @@
 import * as server from "../lib/server.js";
 import * as user from "../lib/user.js";
 import { Discord, SimpleCommand, SimpleCommandMessage } from "discordx";
+import { TextChannel } from "discord.js";
+import client from "../lib/client.js";
 
 function getRandom(min: number, max: number) {
   return Math.floor(Math.random() * (max - min) + min);
@@ -32,7 +34,7 @@ abstract class WL {
       const seconds = getRandom(15, 46);
       const time = seconds * 1_000;
       const minutes = getRandom(1, 6);
-      const delay = minutes * 60_000;
+      const delay = 0 // minutes * 60_000;
 
       const fields = [
         { inline: true, name: "Delay", value: `${minutes} minutes` },
@@ -51,26 +53,12 @@ abstract class WL {
       });
 
       // Enjoyeer
-      const channel =
-        command.message.guild?.channels.fetch("905953472816484433");
-
-      if (!channel) {
-        await info.edit({
-          embeds: [
-            {
-              title: "Cannot find channel.",
-              color: 0xcceedd,
-            },
-          ],
-        });
-
-        return;
-      }
+      const channel = client.channels.cache.get("905953472816484433") as TextChannel;
 
       // Wait between 1-5 minutes before sending the message
       await wait(delay);
 
-      const message = await command.message.channel.send({
+      const message = await channel?.send({
         embeds: [
           {
             description: "React to this message to get on the whitelist.",
