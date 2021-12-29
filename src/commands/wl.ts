@@ -22,13 +22,52 @@ abstract class WL {
       return;
     }
 
+    // Only in bot-spam channel
+    if (command.message.channelId !== "925856832625442906") {
+      return;
+    }
+
     try {
       const max = getRandom(15, 45);
       const seconds = getRandom(15, 46);
       const time = seconds * 1_000;
+      const delay = getRandom(1, 6) * 60_000;
+
+      const fields = [
+        { inline: true, name: "Delay", value: `${delay}` },
+        { inline: true, name: "Max Spots", value: `${max}` },
+        { inline: true, name: "Max Time", value: `${seconds}` },
+      ];
+
+      const info = await command.message.channel.send({
+        embeds: [
+          {
+            title: "Whitelist Status",
+            color: 0xcceedd,
+            fields,
+          },
+        ],
+      });
+
+      // Enjoyeer
+      const channel =
+        command.message.guild?.channels.fetch("905953472816484433");
+
+      if (!channel) {
+        await info.edit({
+          embeds: [
+            {
+              title: "Cannot find channel.",
+              color: 0xcceedd,
+            },
+          ],
+        });
+
+        return;
+      }
 
       // Wait between 1-5 minutes before sending the message
-      await wait(getRandom(1, 6) * 60_000);
+      await wait(delay);
 
       const message = await command.message.channel.send({
         embeds: [
@@ -53,6 +92,22 @@ abstract class WL {
       const [users] = message.reactions.cache
         .map((reaction) => reaction.users.cache.filter((user) => !user.bot))
         .flat();
+
+      await info.edit({
+        embeds: [
+          {
+            title: "Whitelist Status",
+            color: 0xcceedd,
+            fields: [
+              ...fields,
+              {
+                name: "Users",
+                value: users.map((user) => user.username).join(", "),
+              },
+            ],
+          },
+        ],
+      });
 
       // Add `Next` role
       const role = command.message.guild?.roles.cache.find(
