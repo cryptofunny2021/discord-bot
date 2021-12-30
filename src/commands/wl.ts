@@ -2,15 +2,10 @@ import * as server from "../lib/server.js";
 import * as user from "../lib/user.js";
 import { Discord, SimpleCommand, SimpleCommandMessage } from "discordx";
 import { TextChannel } from "discord.js";
-import { formatDistanceToNowStrict } from "date-fns";
 import client from "../lib/client.js";
 
 function getRandom(min: number, max: number) {
   return Math.floor(Math.random() * (max - min) + min);
-}
-
-async function wait(time: number) {
-  return new Promise((resolve) => setTimeout(resolve, time));
 }
 
 @Discord()
@@ -31,21 +26,18 @@ abstract class WL {
     }
 
     try {
-      const max = getRandom(15, 45);
-      const seconds = getRandom(15, 46);
-      const time = seconds * 1_000;
+      const answer = getRandom(1, 9);
+      const max = getRandom(50, 101);
 
-      const fields = [
-        { inline: true, name: "Max Spots", value: `${max}` },
-        { inline: true, name: "Max Time", value: `${seconds} seconds` },
-      ];
-
-      const info = await command.message.channel.send({
+      await command.message.channel.send({
         embeds: [
           {
             title: "Whitelist Status",
             color: 0xcceedd,
-            fields,
+            fields: [
+              { inline: true, name: "Max Spots", value: `${max}` },
+              { inline: true, name: "Number", value: `${answer}` },
+            ],
           },
         ],
       });
@@ -58,25 +50,48 @@ abstract class WL {
       const message = await channel?.send({
         embeds: [
           {
-            description: "React to this message to see what is next.",
+            title: "Choose 1 through 8.",
+            description:
+              "Choose wisely as your first choice, is your only choice.",
             color: 0xcceedd,
           },
         ],
       });
-      const start = Date.now();
 
-      await message.react("👍");
-      await message.awaitReactions({
-        filter: (reaction, user) => {
-          return "👍" === reaction.emoji.name && user.id !== message.author.id;
-        },
+      const choices = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"];
+
+      const first = new Map<string, string>();
+
+      const collector = message.createReactionCollector({
+        filter: (reaction, user) =>
+          choices[answer - 1] === reaction.emoji.name &&
+          !user.bot &&
+          user.id !== message.author.id &&
+          !first.has(user.id),
         max,
-        time,
+        time: 60_000,
       });
 
-      const value = formatDistanceToNowStrict(start, { addSuffix: true });
+      const all = message.createReactionCollector({
+        filter: (_, user) => !user.bot && user.id !== message.author.id,
+      });
 
-      await message.delete();
+      // Keep track of the first choice
+      all.on("collect", (reaction, user) => {
+        if (!first.has(user.id)) {
+          first.set(user.id, `${reaction.emoji.name}`);
+        }
+      });
+
+      for await (const choice of choices) {
+        await message.react(choice);
+      }
+
+      if (!collector.checkEnd()) {
+        await new Promise((resolve) => collector.on("end", resolve));
+      }
+
+      all.stop();
 
       const [users] = message.reactions.cache
         .map((reaction) => reaction.users.cache.filter((user) => !user.bot))
@@ -84,16 +99,17 @@ abstract class WL {
 
       if (users.size > 0) {
         try {
-          await info.edit({
+          await message.edit({
             embeds: [
               {
-                title: "Whitelist Status",
+                title: "Choose 1 through 8.",
+                description:
+                  "Choose wisely as your first choice, is your only choice.",
                 color: 0xcceedd,
                 fields: [
-                  ...fields,
-                  { inline: true, name: "Filled", value },
+                  { name: "Correct Number", value: choices[answer - 1] },
                   {
-                    name: "Users",
+                    name: "Winners",
                     value: users.map((user) => user.username).join(", "),
                   },
                 ],
