@@ -3,7 +3,7 @@ import { Discord, SimpleCommand, SimpleCommandMessage } from "discordx";
 
 @Discord()
 abstract class Pink {
-  @SimpleCommand("pink")
+  @SimpleCommand("pink", { aliases: ["smolist"] })
   async pink(command: SimpleCommandMessage) {
     if (!server.isSmolBrains(command.message.guildId)) {
       return;
