@@ -20,7 +20,7 @@ abstract class WL {
       return;
     }
 
-    // Only in bot-spam channel
+    // Only in admin-bot-spam channel
     if (command.message.channelId !== "925856832625442906") {
       return;
     }
