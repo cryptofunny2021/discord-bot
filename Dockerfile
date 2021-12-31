@@ -22,6 +22,7 @@ USER node
 
 COPY --chown=node:node --from=deps /home/node/node_modules ./node_modules
 COPY --chown=node:node --from=build /home/node/build ./build
+COPY --chown=node:node src/lib/data ./build/src/lib/data
 COPY --chown=node:node prisma .
 
 RUN yarn prisma generate
