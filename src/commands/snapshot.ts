@@ -48,7 +48,7 @@ abstract class Snapshot {
       },
       cars: {
         owners: -1,
-        total: 8_879,
+        total: 8_878,
         url: "",
       },
       land: {
@@ -62,6 +62,8 @@ abstract class Snapshot {
         total: 13_422,
         url: "",
       },
+      status: "",
+      tries: 0,
     });
 
     const message = command.message;
@@ -81,7 +83,7 @@ abstract class Snapshot {
 
     try {
       subscribe(state, async () => {
-        const { bodies, brains, cars, land, rocket } = snapshot(state);
+        const { bodies, brains, cars, land, rocket, status } = snapshot(state);
 
         await info.edit({
           embeds: [
@@ -89,6 +91,7 @@ abstract class Snapshot {
               title: "Snapshot Status",
               color: 0xbb33ff,
               fields: [
+                { name: "Working on", value: status },
                 {
                   inline: true,
                   name: "Smol Brains",
@@ -202,6 +205,8 @@ abstract class Snapshot {
     ) {
       const stakerStatus = new Map<number, boolean>();
 
+      state.status = key.slice(0, 1).toUpperCase().concat(key.slice(1));
+
       try {
         const {
           [key]: { total },
@@ -210,6 +215,8 @@ abstract class Snapshot {
         const stakedTokens = [];
 
         if (staking) {
+          state.tries = Math.ceil(total / 750) * 2;
+
           do {
             const chunks = chunk(
               Array(total)
@@ -235,6 +242,12 @@ abstract class Snapshot {
 
               // @ts-ignore-error
               state[key].staked = stakerStatus.size;
+
+              state.tries--;
+            }
+
+            if (state.tries === 0) {
+              throw new Error("Reran out of tries");
             }
           } while (stakerStatus.size !== total);
 
@@ -257,6 +270,8 @@ abstract class Snapshot {
 
         const stakerOwners = new Map<number, string>();
 
+        state.tries = Math.ceil(stakedTokens.length / 750) * 2;
+
         do {
           const chunks = chunk(
             stakedTokens.filter((item) => !stakerOwners.has(item)),
@@ -278,6 +293,11 @@ abstract class Snapshot {
             );
 
             state[key].owners = stakerOwners.size;
+            state.tries--;
+          }
+
+          if (state.tries === 0) {
+            throw new Error("Reran out of tries");
           }
         } while (stakerOwners.size !== stakedTokens.length);
 
