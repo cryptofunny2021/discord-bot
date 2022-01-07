@@ -1,11 +1,20 @@
+import * as carAbi from "../abis/car.js";
 import * as gymAbi from "../abis/gym.js";
+import * as landAbi from "../abis/land.js";
+import * as rocketAbi from "../abis/rocket.js";
 import * as schoolAbi from "../abis/school.js";
 import * as smolbodyAbi from "../abis/smolbody.js";
 import * as smolbrainAbi from "../abis/smolbrain.js";
 import { ethers } from "ethers";
 
 const provider = new ethers.providers.JsonRpcProvider(
-  "https://arb-mainnet.g.alchemy.com/v2/koj2zAjEWZz5nhLYsdQEEls8UZCEpPRd"
+  "https://arb-mainnet.g.alchemy.com/v2/qXwQz6EVkEtSt0DC0HPLC0OX7TmmoKn5"
+);
+
+export const cars = new ethers.Contract(
+  "0xB16966daD2B5a5282b99846B23dcDF8C47b6132C",
+  carAbi.abi,
+  provider
 );
 
 export const gym = new ethers.Contract(
@@ -14,9 +23,15 @@ export const gym = new ethers.Contract(
   provider
 );
 
-export const smolbrains = new ethers.Contract(
-  "0x6325439389e0797ab35752b4f43a14c004f22a9c",
-  smolbrainAbi.abi,
+export const land = new ethers.Contract(
+  "0xd666d1CC3102cd03e07794A61E5F4333B4239F53",
+  landAbi.abi,
+  provider
+);
+
+export const rocket = new ethers.Contract(
+  "0x8957A18a77451d762dE204b61EA4F858Bb3bED4d",
+  rocketAbi.abi,
   provider
 );
 
@@ -29,5 +44,11 @@ export const school = new ethers.Contract(
 export const smolbodies = new ethers.Contract(
   "0x17DaCAD7975960833f374622fad08b90Ed67D1B5",
   smolbodyAbi.abi,
+  provider
+);
+
+export const smolbrains = new ethers.Contract(
+  "0x6325439389e0797ab35752b4f43a14c004f22a9c",
+  smolbrainAbi.abi,
   provider
 );
