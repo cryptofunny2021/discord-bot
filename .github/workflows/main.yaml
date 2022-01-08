@@ -29,4 +29,5 @@ jobs:
           secrets: |
             "dotenv=DEFINED_API_KEY=${{ secrets.DEFINED_API_KEY }}
             DEFINED_URL=${{ secrets.DEFINED_URL }}
-            MARKETPLACE_URL=${{ secrets.MARKETPLACE_URL }}"
+            MARKETPLACE_URL=${{ secrets.MARKETPLACE_URL }}
+            SNAPSHOT_URL=${{ secrets.SNAPSHOT_URL }}"
