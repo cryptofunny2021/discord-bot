@@ -1,15 +1,7 @@
 import * as user from "../lib/user.js";
-import { Contract } from "ethers";
 import { Discord, SimpleCommand, SimpleCommandMessage } from "discordx";
-import {
-  cars,
-  gym,
-  land,
-  rocket,
-  school,
-  smolbodies,
-  smolbrains,
-} from "../lib/contracts.js";
+import { GraphQLClient } from "graphql-request";
+import { getSdk } from "../../generated/snapshot.graphql.js";
 import { proxy, snapshot, subscribe } from "valtio/vanilla";
 import fetch from "cross-fetch";
 
@@ -25,6 +17,8 @@ async function wait() {
   return new Promise((resolve) => setTimeout(resolve, 7_500));
 }
 
+const client = getSdk(new GraphQLClient(`${process.env.SNAPSHOT_URL}`));
+
 @Discord()
 abstract class Snapshot {
   @SimpleCommand("snapshot")
@@ -35,35 +29,31 @@ abstract class Snapshot {
 
     const state = proxy({
       bodies: {
-        owners: -1,
-        staked: -1,
+        fetched: 0,
         total: 6_666,
         url: "",
       },
       brains: {
-        owners: -1,
-        staked: -1,
+        fetched: 0,
         total: 13_422,
         url: "",
       },
       cars: {
-        owners: -1,
+        fetched: 0,
         total: 8_878,
         url: "",
       },
       land: {
-        owners: -1,
+        fetched: 0,
         total: 4_216,
         url: "",
       },
       rocket: {
-        owners: -1,
-        staked: -1,
+        fetched: 0,
         total: 13_422,
         url: "",
       },
       status: "",
-      tries: 0,
     });
 
     const message = command.message;
@@ -91,104 +81,35 @@ abstract class Snapshot {
               title: "Snapshot Status",
               color: 0xbb33ff,
               fields: [
-                { name: "Working on", value: status },
-                {
-                  inline: true,
-                  name: "Smol Brains",
-                  value: `${brains.total}`,
-                },
-                {
-                  inline: true,
-                  name: "Stakers",
-                  value: `${brains.staked}`,
-                },
-                {
-                  inline: true,
-                  name: "Owners",
-                  value: `${brains.owners}`,
-                },
-                {
-                  inline: true,
-                  name: "Smol Bodies",
-                  value: `${bodies.total}`,
-                },
-                {
-                  inline: true,
-                  name: "Stakers",
-                  value: `${bodies.staked}`,
-                },
-                {
-                  inline: true,
-                  name: "Owners",
-                  value: `${bodies.owners}`,
-                },
-                {
-                  inline: true,
-                  name: "Smol Rocket",
-                  value: `${rocket.total}`,
-                },
-                {
-                  inline: true,
-                  name: "Stakers",
-                  value: `${rocket.staked}`,
-                },
-                {
-                  inline: true,
-                  name: "Owners",
-                  value: `${rocket.owners}`,
-                },
-                {
-                  inline: true,
-                  name: "Smol Land",
-                  value: `${land.total}`,
-                },
-                {
-                  inline: true,
-                  name: "Owners",
-                  value: `${land.owners}`,
-                },
-                {
-                  inline: true,
-                  name: "\u200b",
-                  value: "\u200b",
-                },
-                {
-                  inline: true,
-                  name: "Smol Cars",
-                  value: `${cars.total}`,
-                },
-                {
-                  inline: true,
-                  name: "Owners",
-                  value: `${cars.owners}`,
-                },
-                {
-                  inline: true,
-                  name: "\u200b",
-                  value: "\u200b",
-                },
-                {
-                  inline: true,
-                  name: "CSVs",
-                  value: [
-                    [bodies.url, "Smol Bodies"],
-                    [brains.url, "Smol Brains"],
-                    [land.url, "Smol Land"],
-                    [cars.url, "Smol Cars"],
-                    [rocket.url, "Smol Rocket"],
-                  ]
-                    .filter(([url]) => Boolean(url))
-                    .reduce((acc, [url, title]) => {
-                      return `${acc} [${title}](${url})`;
-                    }, ""),
-                },
-              ].map((item) => {
-                if (item.value !== "" && item.value !== "-1") {
-                  return item;
-                }
-
-                return spacer;
-              }),
+                status === "done"
+                  ? { name: "Complete", value: "\u200b" }
+                  : { name: `Working on ${status}`, value: "\u200b" },
+                ...(
+                  [
+                    ["Smol Brains", brains],
+                    ["Smol Land", land],
+                    ["Smol Bodies", bodies],
+                    ["Smol Cars", cars],
+                    ["Smol Rocket", rocket],
+                  ] as const
+                )
+                  .map(([name, data]) => [
+                    {
+                      inline: true,
+                      name,
+                      value: `${data.fetched}/${data.total}`,
+                    },
+                    {
+                      inline: true,
+                      name: "CSV",
+                      value: data.url
+                        ? `[Download](${data.url})`
+                        : "Not available",
+                    },
+                    spacer,
+                  ])
+                  .flat(),
+              ],
             },
           ],
         });
@@ -197,123 +118,37 @@ abstract class Snapshot {
       console.log("Edit embed error:", error);
     }
 
-    async function query(
+    let count = 0;
+    let id_gt: string | undefined;
+
+    async function query<T extends (res: string[]) => Promise<void>>(
       key: "bodies" | "brains" | "cars" | "land" | "rocket",
-      nft: Contract,
-      staking: Contract | null,
-      method: string
+      get: T
     ) {
-      const stakerStatus = new Map<number, boolean>();
+      let results: string[] = [];
+
+      id_gt = undefined;
 
       state.status = key.slice(0, 1).toUpperCase().concat(key.slice(1));
 
       try {
-        const {
-          [key]: { total },
-        } = snapshot(state);
-
-        const stakedTokens = [];
-
-        if (staking) {
-          state.tries = Math.ceil(total / 750) * 2;
-
-          do {
-            const chunks = chunk(
-              Array(total)
-                .fill(0)
-                .map((_, index) => index)
-                .filter((item) => !stakerStatus.has(item)),
-              750
-            );
-
-            for await (const data of chunks) {
-              await wait();
-              await message.channel.sendTyping();
-
-              await Promise.all(
-                data.map(async (tokenId) => {
-                  try {
-                    const status: boolean = await staking[method](tokenId);
-
-                    stakerStatus.set(tokenId, status);
-                  } catch {}
-                })
-              );
-
-              // @ts-ignore-error
-              state[key].staked = stakerStatus.size;
-
-              state.tries--;
-            }
-
-            if (state.tries === 0) {
-              throw new Error("Reran out of tries");
-            }
-          } while (stakerStatus.size !== total);
-
-          for (const [token, status] of stakerStatus.entries()) {
-            if (status) {
-              stakedTokens.push(token);
-            }
-          }
-
-          // @ts-ignore-error
-          state[key].staked = stakedTokens.length;
-        } else {
-          Array(total)
-            .fill(0)
-            .map((_, index) => index)
-            .forEach((token) => {
-              stakedTokens.push(token);
-            });
-        }
-
-        const stakerOwners = new Map<number, string>();
-
-        state.tries = Math.ceil(stakedTokens.length / 750) * 2;
-
         do {
-          const chunks = chunk(
-            stakedTokens.filter((item) => !stakerOwners.has(item)),
-            750
-          );
+          await message.channel.sendTyping();
+          await get(results);
 
-          for await (const data of chunks) {
-            await wait();
-            await message.channel.sendTyping();
-
-            await Promise.all(
-              data.map(async (tokenId) => {
-                try {
-                  const owner: string = await nft.ownerOf(tokenId);
-
-                  stakerOwners.set(tokenId, owner);
-                } catch {}
-              })
-            );
-
-            state[key].owners = stakerOwners.size;
-            state.tries--;
-          }
-
-          if (state.tries === 0) {
-            throw new Error("Reran out of tries");
-          }
-        } while (stakerOwners.size !== stakedTokens.length);
+          state[key].fetched += count;
+        } while (count === 1_000);
 
         const url = `https://filebin.net/smols-${Date.now()}/${key}.csv`;
 
         await fetch(url, {
           body: Object.entries(
-            Array.from(stakerOwners).reduce<Record<string, number>>(
-              (acc, [, wallet]) => {
-                acc[wallet] ??= 0;
-                acc[wallet]++;
+            results.reduce<Record<string, number>>((acc, wallet) => {
+              acc[wallet] ??= 0;
+              acc[wallet]++;
 
-                return acc;
-              },
-              {}
-            )
+              return acc;
+            }, {})
           )
             .sort(([, left], [, right]) => right - left)
             .map((item) => item.join(","))
@@ -338,11 +173,69 @@ abstract class Snapshot {
     }
 
     try {
-      await query("brains", smolbrains, school, "isAtSchool");
-      await query("bodies", smolbodies, gym, "isAtGym");
-      await query("land", land, null, "");
-      await query("cars", cars, null, "");
-      await query("rocket", rocket, rocket, "boardedBeforeDeadline");
+      await query("brains", async (results) => {
+        const data = await client.getBodiesSnapshot({
+          where: {
+            collection: "0x6325439389e0797ab35752b4f43a14c004f22a9c",
+            staked: true,
+            id_gt,
+          },
+        });
+
+        count = 0;
+
+        data.tokens.forEach((token) => {
+          id_gt = token.id;
+
+          token.owners.forEach((owner) => {
+            results.push(owner.user.id);
+
+            count++;
+          });
+        });
+      });
+
+      await query("bodies", async (results) => {
+        const data = await client.getBodiesSnapshot({
+          where: {
+            collection: "0x17dacad7975960833f374622fad08b90ed67d1b5",
+            staked: true,
+            id_gt,
+          },
+        });
+
+        count = 0;
+
+        data.tokens.forEach((token) => {
+          id_gt = token.id;
+
+          token.owners.forEach((owner) => {
+            results.push(owner.user.id);
+
+            count++;
+          });
+        });
+      });
+
+      await query("rocket", async (results) => {
+        const data = await client.getRocketSnapshot({
+          where: { beforeDeadline: true, id_gt },
+        });
+
+        count = 0;
+
+        data.boardeds.forEach((boarded) => {
+          id_gt = boarded.id;
+
+          boarded.token.owners.forEach((owner) => {
+            results.push(owner.user.id);
+
+            count++;
+          });
+        });
+      });
+
+      state.status = "done";
     } catch (error) {
       console.log("!snapshot error:", error);
 
