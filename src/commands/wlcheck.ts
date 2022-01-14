@@ -22,10 +22,9 @@ abstract class WLCheck {
           break;
 
         case server.isToadstoolz(guildId) && channelId === "929515043236757544":
-          await message.react(
             sheets.toadstoolz().some((item) => item.endsWith(wallet))
               ? "✅"
-              : "⛔️"
+              : "🚫"
           );
 
           break;
