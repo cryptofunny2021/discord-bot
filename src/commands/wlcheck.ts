@@ -1,5 +1,5 @@
 import * as server from "../lib/server.js";
-import * as stakers from "../lib/stakers.js";
+import * as sheets from "../lib/sheets.js";
 import { Discord, SimpleCommand, SimpleCommandMessage } from "discordx";
 
 const emojis = ["0️⃣", "1️⃣", "2️⃣"];
@@ -8,27 +8,28 @@ const emojis = ["0️⃣", "1️⃣", "2️⃣"];
 abstract class WLCheck {
   @SimpleCommand("wlcheck")
   async wlcheck(command: SimpleCommandMessage) {
-    if (!server.isEnjoyor(command.message.guildId)) {
-      return;
-    }
-
-    // Only in wl-checkooor channel
-    if (command.message.channelId !== "926595545928192041") {
-      return;
-    }
-
     const message = command.message;
-    const [, argument] = message.content.split(" ");
+    const { channelId, content, guildId } = message;
+    const [, argument] = content.split(" ");
 
     try {
-      const wallet = argument.toLowerCase();
-      const count = [stakers.bodies, stakers.brains].reduce(
-        (acc, wallets) =>
-          wallets.some((item) => item.endsWith(wallet)) ? acc + 1 : acc,
-        0
-      );
+      const wallet = argument.trim().toLowerCase();
 
-      await message.react(emojis[count]);
+      switch (true) {
+        case server.isEnjoyor(guildId) && channelId === "926595545928192041":
+          await message.react(emojis[sheets.enjoyor(wallet)]);
+
+          break;
+
+        case server.isToadstoolz(guildId) && channelId === "929515043236757544":
+          await message.react(
+            sheets.toadstoolz().some((item) => item.endsWith(wallet))
+              ? "✅"
+              : "❎"
+          );
+
+          break;
+      }
     } catch (error) {
       console.log("!wlcheck Error: ", error);
     }
