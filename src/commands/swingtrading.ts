@@ -50,4 +50,28 @@ abstract class SwingTrading {
       console.log("!doudou Error: ", error);
     }
   }
+
+  @SimpleCommand("doggy")
+  async doggy(command: SimpleCommandMessage) {
+    if (!server.isTreasure(command.message.guildId)) {
+      return;
+    }
+
+    try {
+      await command.message.channel.send({
+        embeds: [
+          {
+            description: `I don't care about stocks, if magic was a good project it would be at $100 now with s&p mooning or without it`,
+            color: 48028,
+            timestamp: "2022-01-10T20:01:00.000Z",
+            footer: {
+              text: "doggycoiner",
+            },
+          },
+        ],
+      });
+    } catch (error) {
+      console.log("!doggy Error: ", error);
+    }
+  }
 }
