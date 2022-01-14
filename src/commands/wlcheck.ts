@@ -25,7 +25,7 @@ abstract class WLCheck {
           await message.react(
             sheets.toadstoolz().some((item) => item.endsWith(wallet))
               ? "✅"
-              : "❎"
+              : "⛔️"
           );
 
           break;
