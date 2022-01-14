@@ -40,12 +40,17 @@ abstract class Snapshot {
       },
       cars: {
         fetched: 0,
-        total: 8_878,
+        total: 9_130,
+        url: "",
+      },
+      extra_life: {
+        fetched: 0,
+        total: 32,
         url: "",
       },
       land: {
         fetched: 0,
-        total: 4_216,
+        total: 4_220,
         url: "",
       },
       rocket: {
@@ -73,7 +78,8 @@ abstract class Snapshot {
 
     try {
       subscribe(state, async () => {
-        const { bodies, brains, cars, land, rocket, status } = snapshot(state);
+        const { bodies, brains, cars, extra_life, land, rocket, status } =
+          snapshot(state);
 
         await info.edit({
           embeds: [
@@ -91,6 +97,7 @@ abstract class Snapshot {
                     ["Smol Bodies", bodies],
                     ["Smol Cars", cars],
                     ["Smol Rocket", rocket],
+                    ["Extra Life", extra_life],
                   ] as const
                 )
                   .map(([name, data]) => [
@@ -122,14 +129,18 @@ abstract class Snapshot {
     let id_gt: string | undefined;
 
     async function query<T extends (res: string[]) => Promise<void>>(
-      key: "bodies" | "brains" | "cars" | "land" | "rocket",
+      key: "bodies" | "brains" | "cars" | "extra_life" | "land" | "rocket",
       get: T
     ) {
       let results: string[] = [];
 
       id_gt = undefined;
 
-      state.status = key.slice(0, 1).toUpperCase().concat(key.slice(1));
+      state.status = key
+        .slice(0, 1)
+        .toUpperCase()
+        .concat(key.slice(1))
+        .replace(/_(.)/, (_, letter) => ` ${letter}`.toUpperCase());
 
       try {
         do {
@@ -174,7 +185,7 @@ abstract class Snapshot {
 
     try {
       await query("brains", async (results) => {
-        const data = await client.getBodiesSnapshot({
+        const data = await client.getTokenSnapshot({
           where: {
             collection: "0x6325439389e0797ab35752b4f43a14c004f22a9c",
             staked: true,
@@ -195,8 +206,50 @@ abstract class Snapshot {
         });
       });
 
+      await query("land", async (results) => {
+        const data = await client.getTokenSnapshot({
+          where: {
+            collection: "0xd666d1cc3102cd03e07794a61e5f4333b4239f53",
+            id_gt,
+          },
+        });
+
+        count = 0;
+
+        data.tokens.forEach((token) => {
+          id_gt = token.id;
+
+          token.owners.forEach((owner) => {
+            results.push(owner.user.id);
+
+            count++;
+          });
+        });
+      });
+
+      await query("cars", async (results) => {
+        const data = await client.getTokenSnapshot({
+          where: {
+            collection: "0xb16966dad2b5a5282b99846b23dcdf8c47b6132c",
+            id_gt,
+          },
+        });
+
+        count = 0;
+
+        data.tokens.forEach((token) => {
+          id_gt = token.id;
+
+          token.owners.forEach((owner) => {
+            results.push(owner.user.id);
+
+            count++;
+          });
+        });
+      });
+
       await query("bodies", async (results) => {
-        const data = await client.getBodiesSnapshot({
+        const data = await client.getTokenSnapshot({
           where: {
             collection: "0x17dacad7975960833f374622fad08b90ed67d1b5",
             staked: true,
@@ -228,6 +281,27 @@ abstract class Snapshot {
           id_gt = boarded.id;
 
           boarded.token.owners.forEach((owner) => {
+            results.push(owner.user.id);
+
+            count++;
+          });
+        });
+      });
+
+      await query("extra_life", async (results) => {
+        const data = await client.getTokenSnapshot({
+          where: {
+            collection: "0x21e1969884d477afd2afd4ad668864a0eebd644c",
+            id_gt,
+          },
+        });
+
+        count = 0;
+
+        data.tokens.forEach((token) => {
+          id_gt = token.id;
+
+          token.owners.forEach((owner) => {
             results.push(owner.user.id);
 
             count++;

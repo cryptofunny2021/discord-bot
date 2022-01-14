@@ -15,10 +15,9 @@ export const getRocketSnapshot = gql`
   }
 `;
 
-export const getBodiesSnapshot = gql`
-  query getBodiesSnapshot($where: Token_filter) {
+export const getTokenSnapshot = gql`
+  query getTokenSnapshot($where: Token_filter) {
     tokens(
-      block: { number: 4435095 }
       first: 1000
       orderBy: id
       orderDirection: asc
