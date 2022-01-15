@@ -5,10 +5,10 @@ import { CommandInteraction } from "discord.js";
 import { Discord, Guild, Permission, Slash, SlashOption } from "discordx";
 
 @Discord()
-abstract class WLCheck {
-  @Guild(server.ENJOYOR)
+@Guild(server.ENJOYOR)
+class Enjoyor {
   @Slash("wlcheck")
-  async enjoyor(
+  async wlcheck(
     @SlashOption("wallet", {
       description: "The wallet to check against the whitelist.",
     })
@@ -28,15 +28,19 @@ abstract class WLCheck {
       console.log("[enjoyor] /wlcheck error: ", error);
     }
   }
+}
 
+@Discord()
+@Guild(server.TOADSTOOLZ)
+class Toadstoolz {
+  @Permission(false)
   @Permission({
     id: user.ORANJE,
     type: "USER",
     permission: true,
   })
-  @Guild(server.TOADSTOOLZ)
   @Slash("wlcheck")
-  async toadstoolz(
+  async wlcheck(
     @SlashOption("wallet", {
       description: "The wallet to check against the whitelist.",
     })
