@@ -1,25 +1,30 @@
 import "reflect-metadata";
 import "dotenv/config";
+
 import { Interaction, Message } from "discord.js";
-import { snapshot, subscribe } from "valtio/vanilla";
-import client from "./lib/client.js";
-// import commands from "./lib/commands.js";
-import magic from "./lib/magic.js";
-// import version from "./lib/version.js";
 import { dirname, importx } from "@discordx/importer";
+import { message } from "./lib/letmein-message.js";
+import { snapshot, subscribe } from "valtio/vanilla";
+
+import client from "./lib/client.js";
+import magic from "./lib/magic.js";
 
 client.once("ready", async () => {
-  // make sure all guilds are in cache
-  await client.guilds.fetch();
+  try {
+    // make sure all guilds are in cache
+    await client.guilds.fetch();
 
-  await client.initApplicationCommands({
-    guild: { log: false },
-    global: { log: false },
-  });
+    await client.initApplicationCommands({
+      guild: { log: true },
+      global: { log: true },
+    });
 
-  await client.initApplicationPermissions();
+    await client.initApplicationPermissions(true);
+  } catch (error) {
+    console.log("Error initializing:", error);
+  }
 
-  // await importx(dirname(import.meta.url) + "/commands/shared/**.{js,ts}");
+  message();
 
   subscribe(magic, () => {
     const { price } = snapshot(magic);
@@ -42,6 +47,7 @@ client.on("messageCreate", (message: Message) => {
 
 async function run() {
   await importx(dirname(import.meta.url) + "/commands/**/*.{js,ts}");
+  await importx(dirname(import.meta.url) + "/interactions/**/*.{js,ts}");
 
   client.login(`${process.env.BOT_TOKEN}`);
 }
