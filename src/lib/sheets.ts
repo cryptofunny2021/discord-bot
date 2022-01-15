@@ -2,15 +2,13 @@ import { GoogleSpreadsheet } from "google-spreadsheet";
 import { proxy, snapshot } from "valtio/vanilla";
 
 type State = {
-  bodies: string[];
-  brains: string[];
+  enjoyor: Record<string, number>;
   timestamp: number;
   toadstoolz: string[];
 };
 
 const state = proxy<State>({
-  bodies: [],
-  brains: [],
+  enjoyor: {},
   timestamp: 0,
   toadstoolz: [],
 });
@@ -25,21 +23,18 @@ const fetchers = [
       throw new Error("Unable to load Enjoyor Google sheet.");
     }
 
-    for (let index = 0; index < 15_000; index++) {
-      // Both wallet address columns are null, we are at the end of the list
-      if (!sheet.getCell(index, 0).value && !sheet.getCell(index, 2).value) {
+    for (let index = 5; index < 16_000; index++) {
+      // No more addresses
+      if (!sheet.getCell(index, 1).value) {
         break;
       }
 
-      const bodies = sheet.getCell(index, 0).value;
-      const brains = sheet.getCell(index, 2).value;
+      const wallet = sheet.getCell(index, 1).value;
+      const count = sheet.getCell(index, 2).value;
 
-      if (typeof bodies === "string") {
-        state.bodies.push(bodies.trim().toLowerCase());
-      }
-
-      if (typeof brains === "string") {
-        state.brains.push(brains.trim().toLowerCase());
+      if (typeof wallet === "string" && typeof count === "number") {
+        state.enjoyor[wallet.toLowerCase()] ??= 0;
+        state.enjoyor[wallet.toLowerCase()] += count;
       }
     }
 
@@ -73,14 +68,12 @@ const fetchers = [
   },
 ] as const;
 
-export function enjoyor(wallet: string) {
-  const { bodies, brains } = snapshot(state);
+export function enjoyor(needle: string) {
+  const { enjoyor } = snapshot(state);
+  const wallet =
+    Object.keys(enjoyor).find((wallet) => wallet.endsWith(needle)) ?? "";
 
-  return [bodies, brains].reduce(
-    (acc, wallets) =>
-      wallets.some((item) => item.endsWith(wallet)) ? acc + 1 : acc,
-    0
-  );
+  return enjoyor[wallet] ?? 0;
 }
 
 export function toadstoolz() {
