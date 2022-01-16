@@ -2,7 +2,7 @@ import * as server from "../lib/server.js";
 import { Discord, SimpleCommand, SimpleCommandMessage } from "discordx";
 
 @Discord()
-abstract class SwingTrading {
+abstract class Quotes {
   @SimpleCommand("swingtrading")
   async swingtrading(command: SimpleCommandMessage) {
     if (!server.isTreasure(command.message.guildId)) {
