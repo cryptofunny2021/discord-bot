@@ -74,4 +74,44 @@ abstract class Quotes {
       console.log("!doggy Error: ", error);
     }
   }
+
+  @SimpleCommand("prayer")
+  async prayer(command: SimpleCommandMessage) {
+    if (command.message.channelId !== "888462214133055489") {
+      return;
+    }
+
+    try {
+      await command.message.channel.send({
+        embeds: [
+          {
+            description: `Our Papa Parmesano, who art gigabraining,
+hallowed be thy Smol Name,
+thy Bridgeworld come,
+thy will be done,
+on treasure.lol as it is in heaven.
+
+Give us this day our daily $MAGIC.
+And forgive us our paperhands,
+as we forgive those
+who dump all over us.
+
+And lead us not into temptation,
+but deliver us from OS.
+
+For thine is the kingdom,
+and the power, and the glory,
+for ever and ever. HODL.`,
+            color: 48028,
+            timestamp: "2022-01-02T21:36:00.000Z",
+            footer: {
+              text: "kalin3186",
+            },
+          },
+        ],
+      });
+    } catch (error) {
+      console.log("!doggy Error: ", error);
+    }
+  }
 }
