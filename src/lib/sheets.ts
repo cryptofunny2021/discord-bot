@@ -23,6 +23,9 @@ const fetchers = [
       throw new Error("Unable to load Enjoyor Google sheet.");
     }
 
+    // Clear existing data
+    state.enjoyor = {};
+
     for (let index = 5; index < 16_000; index++) {
       // No more addresses
       if (!sheet.getCell(index, 1).value) {
@@ -48,6 +51,9 @@ const fetchers = [
     if (!sheet) {
       throw new Error("Unable to load Toadstoolz Google sheet.");
     }
+
+    // Clear existing data
+    state.toadstoolz = [];
 
     for (let index = 0; index < 15_000; index++) {
       // Index column is null, then we are at the end of the list
