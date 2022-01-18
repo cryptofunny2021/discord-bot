@@ -1,18 +1,32 @@
 import * as server from "../lib/server.js";
 import * as sheets from "../lib/sheets.js";
-import { Discord, SimpleCommand, SimpleCommandMessage } from "discordx";
+import { AddressZero } from "@ethersproject/constants";
+import {
+  Discord,
+  SimpleCommand,
+  SimpleCommandMessage,
+  SimpleCommandOption,
+} from "discordx";
+
+function isPartialAddress(wallet: string | undefined = ""): wallet is string {
+  return /^[a-f0-9]+$/g.test(wallet);
+}
 
 @Discord()
 abstract class WLCheck {
   @SimpleCommand("wlcheck")
-  async wlcheck(command: SimpleCommandMessage) {
+  async wlcheck(
+    @SimpleCommandOption("wallet", {
+      description: "The wallet to check against the whitelist.",
+      type: "STRING",
+    })
+    wallet: string | undefined,
+    command: SimpleCommandMessage
+  ) {
     const message = command.message;
-    const { channelId, content, guildId } = message;
-    const [, argument] = content.split(" ");
+    const { channelId, guildId } = message;
 
     try {
-      const wallet = argument.trim().toLowerCase();
-
       if (server.isEnjoyor(guildId) && channelId === "926595545928192041") {
         await message.reply(
           "The !wlcheck command is deprecated, use /wlcheck."
@@ -21,8 +35,14 @@ abstract class WLCheck {
         server.isToadstoolz(guildId) &&
         channelId === "929515043236757544"
       ) {
+        if (!isPartialAddress(wallet)) {
+          return message.reply(`Usage: \`\`!wlcheck ${AddressZero}\`\``);
+        }
+
         await message.react(
-          sheets.toadstoolz().some((item) => item.endsWith(wallet))
+          sheets
+            .toadstoolz()
+            .some((item) => item.endsWith(wallet.toLowerCase()))
             ? "✅"
             : "🚫"
         );
