@@ -10,7 +10,7 @@ import {
 import { utils } from "ethers";
 
 function isPartialAddress(wallet: string | undefined = ""): wallet is string {
-  return /^[a-f0-9]+$/g.test(wallet) || utils.isAddress(wallet);
+  return /^[a-f0-9]+$/ig.test(wallet) || utils.isAddress(wallet);
 }
 
 @Discord()
