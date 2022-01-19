@@ -1,5 +1,6 @@
 import { GoogleSpreadsheet } from "google-spreadsheet";
 import { proxy, snapshot } from "valtio/vanilla";
+import { utils } from "ethers";
 
 type State = {
   enjoyor: Record<string, number>;
@@ -26,16 +27,20 @@ const fetchers = [
     // Clear existing data
     state.enjoyor = {};
 
-    for (let index = 5; index < 16_000; index++) {
+    for (let index = 2; index < 16_000; index++) {
       // No more addresses
       if (!sheet.getCell(index, 1).value) {
         break;
       }
 
-      const wallet = sheet.getCell(index, 1).value;
-      const count = sheet.getCell(index, 2).value;
+      const wallet = sheet.getCell(index, 0).value;
+      const count = sheet.getCell(index, 1).value;
 
-      if (typeof wallet === "string" && typeof count === "number") {
+      if (
+        typeof wallet === "string" &&
+        typeof count === "number" &&
+        utils.isAddress(wallet)
+      ) {
         state.enjoyor[wallet.toLowerCase()] ??= 0;
         state.enjoyor[wallet.toLowerCase()] += count;
       }
