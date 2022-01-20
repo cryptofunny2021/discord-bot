@@ -3,6 +3,8 @@ import { Discord, SimpleCommand, SimpleCommandMessage } from "discordx";
 import { snapshot } from "valtio/vanilla";
 import state from "../lib/magic.js";
 
+const spacer = { inline: true, name: "\u200b", value: "\u200b" };
+
 @Discord()
 abstract class Magic {
   @SimpleCommand("magic")
@@ -22,10 +24,13 @@ abstract class Magic {
             color: 0xdd524d,
             fields: [
               {
+                inline: true,
                 name: "Price",
                 value: magic.price,
               },
+              spacer,
               {
+                inline: true,
                 name: "24 Hour Change",
                 value: magic.change24h,
               },
@@ -36,11 +41,44 @@ abstract class Magic {
               width: 64,
             },
             footer: {
-              text: `Courtesy of Defined • ${formatDistanceToNowStrict(
+              text: `Powered by Defined • ${formatDistanceToNowStrict(
                 magic.timestamp,
                 { addSuffix: true }
               )}`,
               icon_url: "https://defined.fi/logo192.png",
+            },
+          },
+          {
+            title: "$MAGIC Stats",
+            description: "",
+            url: `https://www.coingecko.com/en/coins/magic`,
+            color: 0xdd524d,
+            fields: [
+              {
+                inline: true,
+                name: "All Time High",
+                value: magic.ath,
+              },
+              {
+                inline: true,
+                name: "All Time High Date",
+                value: magic.ath_date,
+              },
+              spacer,
+              { inline: true, name: "24 Hour High", value: magic.high_24h },
+              { inline: true, name: "24 Hour Low", value: magic.low_24h },
+            ],
+            thumbnail: {
+              url: "https://s2.coinmarketcap.com/static/img/coins/64x64/14783.png",
+              height: 64,
+              width: 64,
+            },
+            footer: {
+              text: `Powered by CoinGecko • ${formatDistanceToNowStrict(
+                magic.timestamp,
+                { addSuffix: true }
+              )}`,
+              icon_url: "https://www.coingecko.com/favicon-96x96.png",
             },
           },
         ],

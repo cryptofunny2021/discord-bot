@@ -1,8 +1,20 @@
 import { GraphQLClient } from "graphql-request";
+import { formatDistanceToNowStrict, parseISO } from "date-fns";
 import { getSdk } from "../../generated/defined.graphql.js";
 import { proxy, snapshot } from "valtio/vanilla";
+import got from "got";
 
-const state = proxy({ change24h: "", price: "", timestamp: 0 });
+type USD<T> = { usd: T };
+
+const state = proxy({
+  ath: "",
+  ath_date: "",
+  change24h: "",
+  high_24h: "",
+  low_24h: "",
+  price: "",
+  timestamp: 0,
+});
 
 const client = getSdk(
   new GraphQLClient(`${process.env.DEFINED_URL}`, {
@@ -27,22 +39,26 @@ async function fetch() {
 
     state.price = round.format(Number(body.pairMetadata?.price));
     state.change24h = percent.format(body.pairMetadata?.priceChange ?? 0);
+
+    const { market_data: data } = await got(
+      "https://api.coingecko.com/api/v3/coins/arbitrum-one/contract/0x539bde0d7dbd336b79148aa742883198bbf60342"
+    ).json<{
+      market_data: {
+        ath: USD<number>;
+        ath_date: USD<string>;
+        low_24h: USD<number>;
+        high_24h: USD<number>;
+      };
+    }>();
+
+    state.ath = round.format(data.ath.usd);
+    state.ath_date = formatDistanceToNowStrict(parseISO(data.ath_date.usd), {
+      addSuffix: true,
+    });
+    state.high_24h = round.format(data.high_24h.usd);
+    state.low_24h = round.format(data.low_24h.usd);
+
     state.timestamp = Date.now();
-
-    // console.log(state.timestamp);
-    // const { market_data: data } = await got(
-    //   "https://api.coingecko.com/api/v3/coins/arbitrum-one/contract/0x539bde0d7dbd336b79148aa742883198bbf60342"
-    // ).json<{
-    //   market_data: {
-    //     current_price: USD;
-    //     price_change_percentage_24h_in_currency: USD;
-    //     price_change_percentage_7d_in_currency: USD;
-    //   };
-    // }>();
-
-    // this.price = data.current_price.usd;
-    // this.change24h = data.price_change_percentage_24h_in_currency.usd;
-    // this.change7d = data.price_change_percentage_7d_in_currency.usd;
   } catch (error) {
     if (error instanceof Error) {
       console.log("Error fetching price", error.message);
