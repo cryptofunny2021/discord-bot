@@ -17,15 +17,17 @@ class StartEvent {
       if (channel?.isText()) {
         await interaction.guild?.emojis.fetch();
 
-        const emoji = interaction.guild?.emojis.cache.get("934146325656784906");
+        const emoji = interaction.guild?.emojis.cache.get("913172040507346975");
 
         if (!emoji) {
           throw new Error("Emoji not found");
         }
+        
+        await channel.messages.fetch();
 
-        const exists = channel.messages.cache.has("");
+        const exists = channel.messages.cache.has("934148577335324712");
         const message = exists
-          ? channel.messages.cache.get("")!
+          ? channel.messages.cache.get("934148577335324712")!
           : await channel.send({
               embeds: [
                 {
