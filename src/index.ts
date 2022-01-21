@@ -5,6 +5,7 @@ import { Interaction, Message } from "discord.js";
 import { dirname, importx } from "@discordx/importer";
 import { message } from "./lib/letmein-message.js";
 import { snapshot, subscribe } from "valtio/vanilla";
+import { swolevent } from "./lib/swolevent.js";
 
 import client from "./lib/client.js";
 import magic from "./lib/magic.js";
@@ -25,6 +26,10 @@ client.once("ready", async () => {
   }
 
   message();
+
+  try {
+    swolevent();
+  } catch {}
 
   subscribe(magic, () => {
     const { price } = snapshot(magic);

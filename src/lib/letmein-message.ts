@@ -1,6 +1,6 @@
 import * as server from "./server.js";
-import client from "./client.js";
 import { MessageActionRow, MessageButton } from "discord.js";
+import client from "./client.js";
 
 export async function message() {
   try {
