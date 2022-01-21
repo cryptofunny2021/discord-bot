@@ -17,7 +17,7 @@ class StartEvent {
       if (channel?.isText()) {
         await interaction.guild?.emojis.fetch();
 
-        const emoji = interaction.guild?.emojis.cache.get("934103870265778216");
+        const emoji = interaction.guild?.emojis.cache.get("934146325656784906");
 
         if (!emoji) {
           throw new Error("Emoji not found");

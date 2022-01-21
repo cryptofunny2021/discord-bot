@@ -10,7 +10,7 @@ export async function swolevent() {
     if (channel?.isText()) {
       await guild?.emojis.fetch();
 
-      const emoji = guild?.emojis.cache.get("913172040507346975");
+      const emoji = guild?.emojis.cache.get("934146325656784906");
 
       if (!emoji) {
         throw new Error("Emoji not found");
