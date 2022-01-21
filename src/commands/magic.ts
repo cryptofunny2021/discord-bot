@@ -48,6 +48,54 @@ abstract class Magic {
               icon_url: "https://defined.fi/logo192.png",
             },
           },
+        ],
+      });
+    } catch (error) {
+      console.log("!magic Error: ", error);
+    }
+  }
+
+  @SimpleCommand("magicstats")
+  async magicstats(command: SimpleCommandMessage) {
+    const { message } = command;
+    const magic = snapshot(state);
+
+    try {
+      await message.channel.sendTyping();
+
+      await command.message.channel.send({
+        embeds: [
+          {
+            title: "$MAGIC Price",
+            description: "",
+            url: `https://defined.fi/arb/0xb7e50106a5bd3cf21af210a755f9c8740890a8c9`,
+            color: 0xdd524d,
+            fields: [
+              {
+                inline: true,
+                name: "Price",
+                value: magic.price,
+              },
+              spacer,
+              {
+                inline: true,
+                name: "24 Hour Change",
+                value: magic.change24h,
+              },
+            ],
+            thumbnail: {
+              url: "https://s2.coinmarketcap.com/static/img/coins/64x64/14783.png",
+              height: 64,
+              width: 64,
+            },
+            footer: {
+              text: `Powered by Defined • ${formatDistanceToNowStrict(
+                magic.timestamp,
+                { addSuffix: true }
+              )}`,
+              icon_url: "https://defined.fi/logo192.png",
+            },
+          },
           {
             title: "$MAGIC Stats",
             description: "",
