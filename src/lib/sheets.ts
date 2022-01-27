@@ -3,18 +3,50 @@ import { proxy, snapshot } from "valtio/vanilla";
 import { utils } from "ethers";
 
 type State = {
+  collector: Record<string, [string, string]>;
   enjoyor: Record<string, number>;
   timestamp: number;
   toadstoolz: string[];
 };
 
 const state = proxy<State>({
+  collector: {},
   enjoyor: {},
   timestamp: 0,
   toadstoolz: [],
 });
 
 const fetchers = [
+  async function collector() {
+    console.log("Fetching Enjoyor whitelist collection.");
+
+    const sheet = await getSheet(process.env.GSHEET_ENJOYOR, 8);
+
+    if (!sheet) {
+      throw new Error("Unable to load Enjoyor Google sheet.");
+    }
+
+    for (let index = 2; index < 16_000; index++) {
+      // No more addresses
+      if (!sheet.getCell(index, 1).value) {
+        break;
+      }
+
+      const wallet = sheet.getCell(index, 1).value;
+      const username = sheet.getCell(index, 2).value;
+      const id = sheet.getCell(index, 3).value;
+
+      if (
+        typeof id === "string" &&
+        typeof username === "string" &&
+        typeof wallet === "string"
+      ) {
+        state.collector[id] = [wallet, username];
+      }
+    }
+
+    console.log("Done fetching Enjoyor whitelist collections.");
+  },
   async function enjoyor() {
     console.log("Fetching Enjoyor whitelist addresses.");
 
@@ -79,6 +111,10 @@ const fetchers = [
   },
 ] as const;
 
+export function add(wallet: string, username: string, id: string) {
+  state.collector[id] = [wallet, username];
+}
+
 export function enjoyor(needle: string) {
   const { enjoyor } = snapshot(state);
   const wallet =
@@ -91,7 +127,7 @@ export function toadstoolz() {
   return snapshot(state).toadstoolz;
 }
 
-async function getSheet(id?: string) {
+async function getSheet(id?: string, sheetIndex = 0) {
   const doc = new GoogleSpreadsheet(id);
 
   try {
@@ -102,14 +138,36 @@ async function getSheet(id?: string) {
 
     await doc.loadInfo();
 
-    const [sheet] = doc.sheetsByIndex;
+    const sheet = doc.sheetsByIndex[sheetIndex];
 
     await sheet.loadCells();
 
     return sheet;
   } catch (error) {
-    console.log("Sheets: Error retrieving sheet.", id);
+    console.log("Sheets: Error retrieving sheet.", id, error);
   }
+}
+
+async function update() {
+  console.log("Updating whitelist entries.");
+
+  const sheet = await getSheet(process.env.GSHEET_ENJOYOR, 8);
+
+  if (!sheet) {
+    throw new Error("Unable to load Enjoyor Google sheet.");
+  }
+
+  const { collector } = snapshot(state);
+
+  Object.entries(collector).forEach(([id, [wallet, username]], index) => {
+    sheet.getCell(index + 2, 1).value = wallet;
+    sheet.getCell(index + 2, 2).value = username;
+    sheet.getCell(index + 2, 3).value = id;
+  });
+
+  await sheet.saveUpdatedCells();
+
+  console.log("Success updating whitelist entries.");
 }
 
 async function fetch() {
@@ -118,6 +176,11 @@ async function fetch() {
   } catch (error) {
     console.log("Sheets: Error fetching sheet information.", error);
   }
+}
+
+// Update every 2 minutes
+if (snapshot(state).timestamp === 0) {
+  setInterval(update, 1000 * 60 * 2);
 }
 
 // Refresh every 15 minutes
