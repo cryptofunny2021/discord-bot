@@ -13,10 +13,10 @@ import { utils } from "ethers";
 
 @Discord()
 @Guild(server.ENJOYOR)
+@Permission(false)
+@Permission({ id: "925836438648533072", permission: true, type: "ROLE" })
 @SlashGroup("wl", "Manage your whitelist information.")
 class WL {
-  @Permission(false)
-  @Permission({ id: "925836438648533072", permission: true, type: "ROLE" })
   @Slash("add")
   async add(
     @SlashOption("wallet", {
