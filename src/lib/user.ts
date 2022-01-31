@@ -1,11 +1,12 @@
 export const CHEESE = "353057125137645568";
+export const END = "146399041125613568";
 export const ORANJE = "244047280947200001";
 export const TRAVELERR = "301756705652342785";
 export const TRIPPE = "229069286931431424";
 export const TWIXY = "168211845109383179";
 export const WYZE = "103496050676858880";
 
-const ADMINS = [CHEESE, TRAVELERR, TRIPPE, TWIXY];
+const ADMINS = [CHEESE, END, TRAVELERR, TRIPPE, TWIXY];
 
 export function isOwner(id?: string | null) {
   return id === WYZE;
