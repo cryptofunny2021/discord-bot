@@ -27,10 +27,6 @@ client.once("ready", async () => {
 
   message();
 
-  try {
-    swolevent();
-  } catch {}
-
   subscribe(magic, () => {
     const { price } = snapshot(magic);
 

@@ -10,12 +10,15 @@ import {
 import { ArgsOf, GuardFunction, SimpleCommandMessage } from "discordx";
 
 export function InChannel(id: string): any {
-  const guard: GuardFunction<CommandInteraction> = async (
-    interaction,
-    _client,
-    next
-  ) => {
-    if (interaction.channelId === id) {
+  const guard: GuardFunction<
+    CommandInteraction | SimpleCommandMessage
+  > = async (interaction, _client, next) => {
+    const channelId =
+      interaction instanceof SimpleCommandMessage
+        ? interaction.message.channelId
+        : interaction.channelId;
+
+    if (channelId === id) {
       await next();
     }
   };

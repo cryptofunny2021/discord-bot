@@ -33,6 +33,7 @@
     "graphql": "16.2.0",
     "graphql-request": "3.7.0",
     "graphql-tag": "2.12.6",
+    "puppeteer": "13.4.0",
     "read-pkg": "7.0.0",
     "reflect-metadata": "0.1.13",
     "valtio": "1.2.7"

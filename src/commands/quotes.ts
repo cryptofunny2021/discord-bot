@@ -1,5 +1,6 @@
 import * as server from "../lib/server.js";
-import { Discord, SimpleCommand, SimpleCommandMessage } from "discordx";
+import { Discord, Guard, SimpleCommand, SimpleCommandMessage } from "discordx";
+import { InChannel } from "../lib/guards.js";
 
 @Discord()
 abstract class Quotes {
@@ -76,11 +77,8 @@ abstract class Quotes {
   }
 
   @SimpleCommand("prayer")
+  @Guard(InChannel("888462214133055489"))
   async prayer(command: SimpleCommandMessage) {
-    if (command.message.channelId !== "888462214133055489") {
-      return;
-    }
-
     try {
       await command.message.channel.send({
         embeds: [

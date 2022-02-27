@@ -1,8 +1,7 @@
-import { GraphQLClient } from "graphql-request";
 import { formatDistanceToNowStrict, parseISO } from "date-fns";
-import { getSdk } from "../../generated/defined.graphql.js";
 import { proxy, snapshot } from "valtio/vanilla";
 import got from "got";
+import puppeteer from "puppeteer";
 
 type USD<T> = { usd: T };
 
@@ -16,29 +15,53 @@ const state = proxy({
   timestamp: 0,
 });
 
-const client = getSdk(
-  new GraphQLClient(`${process.env.DEFINED_URL}`, {
-    headers: { "x-api-key": `${process.env.DEFINED_API_KEY} ` },
-  })
-);
-
-const percent = Intl.NumberFormat("en-US", {
-  maximumFractionDigits: 2,
-  style: "percent",
-});
-
 const round = Intl.NumberFormat("en-US", {
   currency: "USD",
   maximumFractionDigits: 5,
   style: "currency",
 });
 
+async function getMagicInfo() {
+  try {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+
+    await page.goto(
+      "https://dexscreener.com/arbitrum/0xb7e50106a5bd3cf21af210a755f9c8740890a8c9"
+    );
+
+    const selector = "header + div > div > div";
+
+    await page.waitForSelector(selector);
+
+    const price = await page.$eval(
+      `${selector} > div > span + span`,
+      (element) => element.textContent ?? ""
+    );
+
+    const change24h = await page.$eval(
+      `${selector} + div + div > ul > li + li + li + li > div > span + span`,
+      (element) => element.textContent ?? ""
+    );
+
+    await browser.close();
+
+    return { price, change24h };
+  } catch (error) {
+    console.log("dex-error", error);
+
+    return null;
+  }
+}
+
 async function fetch() {
   try {
-    const body = await client.getMagicPrice();
+    const info = await getMagicInfo();
 
-    state.price = round.format(Number(body.pairMetadata?.price));
-    state.change24h = percent.format(body.pairMetadata?.priceChange ?? 0);
+    if (info) {
+      state.price = info.price;
+      state.change24h = info.change24h;
+    }
 
     const { market_data: data } = await got(
       "https://api.coingecko.com/api/v3/coins/arbitrum-one/contract/0x539bde0d7dbd336b79148aa742883198bbf60342"

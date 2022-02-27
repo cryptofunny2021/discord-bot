@@ -1,6 +1,7 @@
 import { formatDistanceToNowStrict } from "date-fns";
-import { Discord, SimpleCommand, SimpleCommandMessage } from "discordx";
+import { Discord, Guard, SimpleCommand, SimpleCommandMessage } from "discordx";
 import { snapshot } from "valtio/vanilla";
+import { InChannel } from "../lib/guards.js";
 import state from "../lib/magic.js";
 
 const spacer = { inline: true, name: "\u200b", value: "\u200b" };
@@ -20,7 +21,7 @@ abstract class Magic {
           {
             title: "$MAGIC Price",
             description: "",
-            url: `https://defined.fi/arb/0xb7e50106a5bd3cf21af210a755f9c8740890a8c9`,
+            url: "https://dexscreener.com/arbitrum/0xb7e50106a5bd3cf21af210a755f9c8740890a8c9",
             color: 0xdd524d,
             fields: [
               {
@@ -41,11 +42,11 @@ abstract class Magic {
               width: 64,
             },
             footer: {
-              text: `Powered by Defined • ${formatDistanceToNowStrict(
+              text: `Powered by DEX Screener • ${formatDistanceToNowStrict(
                 magic.timestamp,
                 { addSuffix: true }
               )}`,
-              icon_url: "https://defined.fi/logo192.png",
+              icon_url: "https://dexscreener.com/favicon.png",
             },
           },
         ],
@@ -56,6 +57,7 @@ abstract class Magic {
   }
 
   @SimpleCommand("magicstats")
+  @Guard(InChannel("888462214133055489"))
   async magicstats(command: SimpleCommandMessage) {
     const { message } = command;
     const magic = snapshot(state);
