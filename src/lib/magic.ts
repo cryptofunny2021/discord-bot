@@ -21,9 +21,22 @@ const round = Intl.NumberFormat("en-US", {
   style: "currency",
 });
 
+const args =
+  process.env.NODE_ENV === "production"
+    ? {
+        args: [
+          "--disable-dev-shm-usage",
+          "--no-sandbox",
+          "--disable-setuid-sandbox",
+        ],
+        executablePath: "/usr/bin/chromium-browser",
+        ignoreHTTPSErrors: true,
+      }
+    : undefined;
+
 async function getMagicInfo() {
   try {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch(args);
     const page = await browser.newPage();
 
     await page.goto(
