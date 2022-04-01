@@ -7,7 +7,7 @@ const client = getSdk(new GraphQLClient(`${process.env.MARKETPLACE_URL}`));
 
 @Discord()
 abstract class Floor {
-  @SimpleCommand("floor")
+  @SimpleCommand("notfloor")
   async floor(command: SimpleCommandMessage) {
     if (!server.isSmolBrains(command.message.guildId)) {
       return;

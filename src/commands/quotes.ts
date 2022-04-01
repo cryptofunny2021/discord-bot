@@ -5,6 +5,7 @@ import { InChannel } from "../lib/guards.js";
 @Discord()
 abstract class Quotes {
   @SimpleCommand("swingtrading")
+  @Guard(InChannel("958963188903329792"))
   async swingtrading(command: SimpleCommandMessage) {
     if (!server.isTreasure(command.message.guildId)) {
       return;
@@ -29,6 +30,7 @@ abstract class Quotes {
   }
 
   @SimpleCommand("doudou")
+  @Guard(InChannel("958963188903329792"))
   async doudou(command: SimpleCommandMessage) {
     if (!server.isTreasure(command.message.guildId)) {
       return;
@@ -53,6 +55,7 @@ abstract class Quotes {
   }
 
   @SimpleCommand("doggy")
+  @Guard(InChannel("958963188903329792"))
   async doggy(command: SimpleCommandMessage) {
     if (!server.isTreasure(command.message.guildId)) {
       return;
@@ -77,7 +80,7 @@ abstract class Quotes {
   }
 
   @SimpleCommand("prayer")
-  @Guard(InChannel("888462214133055489"))
+  @Guard(InChannel("958963188903329792"))
   async prayer(command: SimpleCommandMessage) {
     try {
       await command.message.channel.send({
@@ -109,7 +112,7 @@ for ever and ever. HODL.`,
         ],
       });
     } catch (error) {
-      console.log("!doggy Error: ", error);
+      console.log("!prayer Error: ", error);
     }
   }
 }

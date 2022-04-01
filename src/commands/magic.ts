@@ -57,7 +57,7 @@ abstract class Magic {
   }
 
   @SimpleCommand("magicstats")
-  @Guard(InChannel("888462214133055489"))
+  @Guard(InChannel("958963188903329792"))
   async magicstats(command: SimpleCommandMessage) {
     const { message } = command;
     const magic = snapshot(state);
