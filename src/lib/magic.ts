@@ -35,8 +35,9 @@ const args =
     : undefined;
 
 async function getMagicInfo() {
+  const browser = await puppeteer.launch(args);
+
   try {
-    const browser = await puppeteer.launch(args);
     const page = await browser.newPage();
 
     await page.goto(
@@ -57,13 +58,13 @@ async function getMagicInfo() {
       (element) => element.textContent ?? ""
     );
 
-    await browser.close();
-
     return { price, change24h };
   } catch (error) {
     console.log("dex-error", error);
 
     return null;
+  } finally {
+    await browser.close();
   }
 }
 
