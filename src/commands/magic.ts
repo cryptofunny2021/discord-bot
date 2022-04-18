@@ -11,7 +11,12 @@ abstract class Magic {
   @SimpleCommand("magic")
   async magic(command: SimpleCommandMessage) {
     const { message } = command;
+    const { channelId } = message;
     const magic = snapshot(state);
+
+    if (channelId === "882872974972162118") {
+      return;
+    }
 
     try {
       await message.channel.sendTyping();
