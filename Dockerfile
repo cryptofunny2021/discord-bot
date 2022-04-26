@@ -12,23 +12,11 @@ RUN yarn --production --silent --frozen-lockfile
 
 FROM deps AS build
 
-# Tell Puppeteer to skip installing Chrome. We'll be using the installed package.
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
-
 COPY . .
 RUN yarn --silent --frozen-lockfile
 RUN --mount=type=secret,id=dotenv,dst=.env yarn build
 
 FROM base AS final
-
-RUN apk add --no-cache \
-      chromium \
-      nss \
-      freetype \
-      harfbuzz \
-      ca-certificates \
-      ttf-freefont
 
 USER node
 
