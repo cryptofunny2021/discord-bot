@@ -1,7 +1,6 @@
 import { formatDistanceToNowStrict, parseISO } from "date-fns";
+import { gotScraping } from "got-scraping";
 import { proxy, snapshot } from "valtio/vanilla";
-import got from "got";
-import puppeteer from "puppeteer";
 
 type USD<T> = { usd: T };
 
@@ -21,63 +20,29 @@ const round = Intl.NumberFormat("en-US", {
   style: "currency",
 });
 
-const args =
-  process.env.NODE_ENV === "production"
-    ? {
-        args: [
-          "--disable-dev-shm-usage",
-          "--no-sandbox",
-          "--disable-setuid-sandbox",
-        ],
-        executablePath: "/usr/bin/chromium-browser",
-        ignoreHTTPSErrors: true,
-      }
-    : undefined;
-
-async function getMagicInfo() {
-  const browser = await puppeteer.launch(args);
-
-  try {
-    const page = await browser.newPage();
-
-    await page.goto(
-      "https://dexscreener.com/arbitrum/0xb7e50106a5bd3cf21af210a755f9c8740890a8c9"
-    );
-
-    const selector = "header + div > div > div";
-
-    await page.waitForSelector(selector);
-
-    const price = await page.$eval(
-      `${selector} > div > span + span`,
-      (element) => element.textContent ?? ""
-    );
-
-    const change24h = await page.$eval(
-      `${selector} + div + div > ul > li + li + li + li > div > span + span`,
-      (element) => element.textContent ?? ""
-    );
-
-    return { price, change24h };
-  } catch (error) {
-    console.log("dex-error", error);
-
-    return null;
-  } finally {
-    await browser.close();
-  }
-}
-
 async function fetch() {
   try {
-    const info = await getMagicInfo();
+    const {
+      tradingHistory: [info],
+    } = await gotScraping(
+      "https://io.dexscreener.com/u/trading-history/recent/arbitrum/0xB7E50106A5bd3Cf21AF210A755F9C8740890A8c9"
+    ).json<{
+      tradingHistory: Array<{
+        blockNumber: number;
+        blockTimestamp: number;
+        txnHash: string;
+        logIndex: number;
+        type: "buy" | "sell";
+        priceUsd: string;
+        volumeUsd: string;
+        amount0: string;
+        amount1: string;
+      }>;
+    }>();
 
-    if (info) {
-      state.price = info.price;
-      state.change24h = info.change24h;
-    }
+    state.price = `$${info.priceUsd}`;
 
-    const { market_data: data } = await got(
+    const { market_data: data } = await gotScraping(
       "https://api.coingecko.com/api/v3/coins/arbitrum-one/contract/0x539bde0d7dbd336b79148aa742883198bbf60342"
     ).json<{
       market_data: {
@@ -85,6 +50,7 @@ async function fetch() {
         ath_date: USD<string>;
         low_24h: USD<number>;
         high_24h: USD<number>;
+        price_change_percentage_24h: number;
       };
     }>();
 
@@ -94,6 +60,7 @@ async function fetch() {
     });
     state.high_24h = round.format(data.high_24h.usd);
     state.low_24h = round.format(data.low_24h.usd);
+    state.change24h = `${data.price_change_percentage_24h.toPrecision(3)}%`;
 
     state.timestamp = Date.now();
   } catch (error) {
