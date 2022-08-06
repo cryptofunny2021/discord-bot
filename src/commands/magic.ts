@@ -6,6 +6,8 @@ import state from "../lib/magic.js";
 
 const spacer = { inline: true, name: "\u200b", value: "\u200b" };
 
+const MAGIC_LOGO = "https://i.postimg.cc/1XcZH0Vg/Magic-logomark-On-Light-AW.png";
+
 @Discord()
 abstract class Magic {
   @SimpleCommand("magic")
@@ -42,7 +44,7 @@ abstract class Magic {
               },
             ],
             thumbnail: {
-              url: "https://s2.coinmarketcap.com/static/img/coins/64x64/14783.png",
+              url: MAGIC_LOGO,
               height: 64,
               width: 64,
             },
@@ -91,7 +93,7 @@ abstract class Magic {
               },
             ],
             thumbnail: {
-              url: "https://s2.coinmarketcap.com/static/img/coins/64x64/14783.png",
+              url: MAGIC_LOGO,
               height: 64,
               width: 64,
             },
@@ -124,7 +126,7 @@ abstract class Magic {
               { inline: true, name: "24 Hour Low", value: magic.low_24h },
             ],
             thumbnail: {
-              url: "https://s2.coinmarketcap.com/static/img/coins/64x64/14783.png",
+              url: MAGIC_LOGO,
               height: 64,
               width: 64,
             },
