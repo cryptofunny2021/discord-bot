@@ -9,7 +9,6 @@ import { swolevent } from "./lib/swolevent.js";
 
 import client from "./lib/client.js";
 import magic from "./lib/magic.js";
-import elm from "./lib/elm.js";
 
 client.once("ready", async () => {
   try {
@@ -33,14 +32,6 @@ client.once("ready", async () => {
 
     client.user?.setPresence({
       activities: [{ name: `$MAGIC: ${price}`, type: 3 }],
-    });
-  });
-
-  subscribe(elm, () => {
-    const { price } = snapshot(elm);
-
-    client.user?.setPresence({
-      activities: [{ name: `$ELM: ${price}`, type: 3 }],
     });
   });
 
