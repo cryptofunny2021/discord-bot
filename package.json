@@ -15,7 +15,6 @@
     "build": "yarn generate:graphql && tsc",
     "generate:graphql": "graphql-codegen -r dotenv/config",
     "generate:graphql:watch": "yarn generate:graphql --watch",
-    "migrate": "prisma migrate deploy",
     "start": "node build/src/index.js",
     "dev": "nodemon --exec 'ts-node-esm -T' src/index.ts"
   },
