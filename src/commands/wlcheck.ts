@@ -6,20 +6,22 @@ import {
   SimpleCommand,
   SimpleCommandMessage,
   SimpleCommandOption,
+  SimpleCommandOptionType,
 } from "discordx";
 import { utils } from "ethers";
 
 function isPartialAddress(wallet: string | undefined = ""): wallet is string {
-  return /^[a-f0-9]+$/ig.test(wallet) || utils.isAddress(wallet);
+  return /^[a-f0-9]+$/gi.test(wallet) || utils.isAddress(wallet);
 }
 
 @Discord()
-abstract class WLCheck {
-  @SimpleCommand("wlcheck")
+export class WLCheck {
+  @SimpleCommand()
   async wlcheck(
-    @SimpleCommandOption("wallet", {
+    @SimpleCommandOption({
       description: "The wallet to check against the whitelist.",
-      type: "STRING",
+      name: "wallet",
+      type: SimpleCommandOptionType.String,
     })
     wallet: string | undefined,
     command: SimpleCommandMessage

@@ -5,10 +5,11 @@ import { Discord, Guild, Slash, SlashOption } from "discordx";
 
 @Discord()
 @Guild(server.ENJOYOR)
-class WLCheck {
-  @Slash("wlcheck")
+export class WLCheck {
+  @Slash()
   async wlcheck(
-    @SlashOption("wallet", {
+    @SlashOption({
+      name: "wallet",
       description: "The wallet to check against the whitelist.",
     })
     wallet: string,

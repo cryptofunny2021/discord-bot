@@ -5,25 +5,12 @@ import { Interaction, Message } from "discord.js";
 import { dirname, importx } from "@discordx/importer";
 import { message } from "./lib/letmein-message.js";
 import { snapshot, subscribe } from "valtio/vanilla";
-import { swolevent } from "./lib/swolevent.js";
 
 import client from "./lib/client.js";
 import magic from "./lib/magic.js";
 
 client.once("ready", async () => {
-  try {
-    // make sure all guilds are in cache
-    await client.guilds.fetch();
-
-    await client.initApplicationCommands({
-      guild: { log: true },
-      global: { log: true },
-    });
-
-    await client.initApplicationPermissions(true);
-  } catch (error) {
-    console.log("Error initializing:", error);
-  }
+  await client.initApplicationCommands();
 
   message();
 
@@ -47,10 +34,15 @@ client.on("messageCreate", (message: Message) => {
 });
 
 async function run() {
-  await importx(dirname(import.meta.url) + "/commands/**/*.{js,ts}");
-  await importx(dirname(import.meta.url) + "/interactions/**/*.{js,ts}");
+  await importx(
+    dirname(import.meta.url) + "/{commands,interactions}/**/*.{js,ts}"
+  );
 
-  client.login(`${process.env.BOT_TOKEN}`);
+  if (!process.env.BOT_TOKEN) {
+    throw Error("Could not find BOT_TOKEN in your environment");
+  }
+
+  client.login(process.env.BOT_TOKEN);
 }
 
 run();

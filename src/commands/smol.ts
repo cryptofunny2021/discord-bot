@@ -37,8 +37,8 @@ const shorten = (value: string = "") =>
   `${value.slice(0, 6)}...${value.slice(-4)}`;
 
 @Discord()
-abstract class Smol {
-  @SimpleCommand("smol")
+export class Smol {
+  @SimpleCommand()
   async smol(command: SimpleCommandMessage) {
     // Disabled everywhere for now
     if (1 + 1 === 2) {
@@ -138,10 +138,11 @@ abstract class Smol {
             color: 0x7e22ce,
             fields: [...attributes, owner, ...listings],
             image: {
-              url: token.metadata?.image.replace(
-                "ipfs://",
-                "https://treasure-marketplace.mypinata.cloud/ipfs/"
-              ),
+              url:
+                token.metadata?.image.replace(
+                  "ipfs://",
+                  "https://treasure-marketplace.mypinata.cloud/ipfs/"
+                ) ?? "",
               height: 0,
               width: 0,
             },

@@ -6,15 +6,18 @@ import state from "../lib/magic.js";
 
 const spacer = { inline: true, name: "\u200b", value: "\u200b" };
 
-const MAGIC_LOGO = "https://i.postimg.cc/1XcZH0Vg/Magic-logomark-On-Light-AW.png";
+const MAGIC_LOGO =
+  "https://i.postimg.cc/1XcZH0Vg/Magic-logomark-On-Light-AW.png";
 
 @Discord()
-abstract class Magic {
-  @SimpleCommand("magic")
+export class Magic {
+  @SimpleCommand()
   async magic(command: SimpleCommandMessage) {
     const { message } = command;
     const { channelId } = message;
     const magic = snapshot(state);
+
+    console.log("herre");
 
     if (channelId === "882872974972162118") {
       return;
@@ -63,7 +66,7 @@ abstract class Magic {
     }
   }
 
-  @SimpleCommand("magicstats")
+  @SimpleCommand()
   @Guard(InChannel("958963188903329792"))
   async magicstats(command: SimpleCommandMessage) {
     const { message } = command;

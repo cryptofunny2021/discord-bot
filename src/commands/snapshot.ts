@@ -20,8 +20,8 @@ async function wait() {
 const client = getSdk(new GraphQLClient(`${process.env.SNAPSHOT_URL}`));
 
 @Discord()
-abstract class Snapshot {
-  @SimpleCommand("snapshot")
+export class Snapshot {
+  @SimpleCommand()
   async snapshot(command: SimpleCommandMessage) {
     if (!user.isAdmin(command.message.member?.user.id)) {
       return;

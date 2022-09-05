@@ -6,9 +6,14 @@ import { getSdk } from "../../generated/marketplace.graphql.js";
 const client = getSdk(new GraphQLClient(`${process.env.MARKETPLACE_URL}`));
 
 @Discord()
-abstract class Floor {
-  @SimpleCommand("notfloor")
-  async floor(command: SimpleCommandMessage) {
+export class Floor {
+  @SimpleCommand()
+  async notfloor(command: SimpleCommandMessage) {
+    // Disabled everywhere for now
+    if (1 + 1 === 2) {
+      return;
+    }
+
     if (!server.isSmolBrains(command.message.guildId)) {
       return;
     }

@@ -3,8 +3,8 @@ import { Discord, Guard, SimpleCommand, SimpleCommandMessage } from "discordx";
 import { InChannel } from "../lib/guards.js";
 
 @Discord()
-abstract class Quotes {
-  @SimpleCommand("swingtrading")
+export class Quotes {
+  @SimpleCommand()
   @Guard(InChannel("958963188903329792"))
   async swingtrading(command: SimpleCommandMessage) {
     if (!server.isTreasure(command.message.guildId)) {
@@ -29,7 +29,7 @@ abstract class Quotes {
     }
   }
 
-  @SimpleCommand("doudou")
+  @SimpleCommand()
   @Guard(InChannel("958963188903329792"))
   async doudou(command: SimpleCommandMessage) {
     if (!server.isTreasure(command.message.guildId)) {
@@ -54,7 +54,7 @@ abstract class Quotes {
     }
   }
 
-  @SimpleCommand("doggy")
+  @SimpleCommand()
   @Guard(InChannel("958963188903329792"))
   async doggy(command: SimpleCommandMessage) {
     if (!server.isTreasure(command.message.guildId)) {
@@ -79,7 +79,7 @@ abstract class Quotes {
     }
   }
 
-  @SimpleCommand("prayer")
+  @SimpleCommand()
   @Guard(InChannel("958963188903329792"))
   async prayer(command: SimpleCommandMessage) {
     try {

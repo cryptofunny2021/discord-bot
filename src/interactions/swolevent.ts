@@ -1,20 +1,20 @@
 import * as server from "../lib/server.js";
 import * as user from "../lib/user.js";
-import { CommandInteraction } from "discord.js";
-import { Discord, Guild, Permission, Slash } from "discordx";
+import { ChannelType, CommandInteraction } from "discord.js";
+import { Discord, Guard, Guild, Slash } from "discordx";
+import { IsUser } from "../lib/guards.js";
 
 @Discord()
 @Guild(server.SMOLBODIES)
-class StartEvent {
-  @Permission(false)
-  @Permission({ id: user.TRAVELERR, permission: true, type: "USER" })
-  @Slash("startevent")
+export class StartEvent {
+  @Guard(IsUser(user.TRAVELERR))
+  @Slash({ name: "startevent" })
   async startevent(interaction: CommandInteraction) {
     try {
       const channel =
         interaction.guild?.channels.cache.get("903447705492283482");
 
-      if (channel?.isText()) {
+      if (channel?.type === ChannelType.GuildText) {
         await interaction.guild?.emojis.fetch();
 
         const emoji = interaction.guild?.emojis.cache.get("913172040507346975");
@@ -22,7 +22,7 @@ class StartEvent {
         if (!emoji) {
           throw new Error("Emoji not found");
         }
-        
+
         await channel.messages.fetch();
 
         const exists = channel.messages.cache.has("934148577335324712");

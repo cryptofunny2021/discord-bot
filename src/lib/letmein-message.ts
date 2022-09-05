@@ -1,5 +1,10 @@
 import * as server from "./server.js";
-import { MessageActionRow, MessageButton } from "discord.js";
+import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ChannelType,
+} from "discord.js";
 import client from "./client.js";
 
 export async function message() {
@@ -10,16 +15,16 @@ export async function message() {
     if (guild) {
       const channel = guild.channels.cache.get("931630282581344266");
 
-      if (channel?.isText()) {
+      if (channel?.type === ChannelType.GuildText) {
         await channel.messages.fetch();
 
         if (!channel.lastMessage) {
           channel.send({
             components: [
-              new MessageActionRow().addComponents(
-                new MessageButton()
+              new ActionRowBuilder<ButtonBuilder>().addComponents(
+                new ButtonBuilder()
                   .setLabel("Let Me In")
-                  .setStyle("PRIMARY")
+                  .setStyle(ButtonStyle.Primary)
                   .setCustomId("let-me-in-btn")
               ),
             ],

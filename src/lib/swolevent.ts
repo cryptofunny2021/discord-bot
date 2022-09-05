@@ -1,3 +1,4 @@
+import { ChannelType } from "discord.js";
 import * as server from "../lib/server.js";
 import client from "./client.js";
 
@@ -8,7 +9,7 @@ export async function swolevent() {
 
     const channel = guild?.channels.cache.get("903447705492283482");
 
-    if (channel?.isText()) {
+    if (channel?.type === ChannelType.GuildText) {
       await guild?.emojis.fetch();
 
       const emoji = guild?.emojis.cache.get("913172040507346975");

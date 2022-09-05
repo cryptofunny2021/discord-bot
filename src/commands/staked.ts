@@ -23,8 +23,8 @@ async function smolbrainsStaked() {
 }
 
 @Discord()
-abstract class Staked {
-  @SimpleCommand("staked")
+export class Staked {
+  @SimpleCommand()
   async staked(command: SimpleCommandMessage) {
     if (
       ![server.isSmolBodies, server.isSmolBrains].some((check) =>

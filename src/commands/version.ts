@@ -4,8 +4,8 @@ import { Discord, SimpleCommand, SimpleCommandMessage } from "discordx";
 const prisma = new client.PrismaClient();
 
 @Discord()
-abstract class Version {
-  @SimpleCommand("version")
+export class Version {
+  @SimpleCommand()
   async version(command: SimpleCommandMessage) {
     try {
       await prisma.$connect();

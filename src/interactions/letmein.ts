@@ -1,10 +1,11 @@
+import { NotBot } from "@discordx/utilities";
 import { ButtonInteraction, GuildMemberRoleManager } from "discord.js";
 import { ButtonComponent, Discord, Guard } from "discordx";
-import { InChannel, NotBot } from "../lib/guards.js";
+import { InChannel } from "../lib/guards.js";
 
 @Discord()
-abstract class LetMeIn {
-  @ButtonComponent("let-me-in-btn")
+export class LetMeIn {
+  @ButtonComponent({ id: "let-me-in-btn" })
   @Guard(NotBot, InChannel("931630282581344266"))
   async letmein(interaction: ButtonInteraction) {
     const guild = interaction.guild;

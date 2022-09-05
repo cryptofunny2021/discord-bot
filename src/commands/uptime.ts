@@ -4,8 +4,8 @@ import { Discord, SimpleCommand, SimpleCommandMessage } from "discordx";
 const now = Date.now();
 
 @Discord()
-abstract class Uptime {
-  @SimpleCommand("uptime")
+export class Uptime {
+  @SimpleCommand()
   async uptime(command: SimpleCommandMessage) {
     try {
       await command.message.channel.send({

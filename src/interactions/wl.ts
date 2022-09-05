@@ -3,23 +3,24 @@ import * as sheets from "../lib/sheets.js";
 import { CommandInteraction } from "discord.js";
 import {
   Discord,
+  Guard,
   Guild,
-  Permission,
   Slash,
   SlashGroup,
   SlashOption,
 } from "discordx";
 import { utils } from "ethers";
+import { HasRole } from "../lib/guards.js";
 
 @Discord()
 @Guild(server.ENJOYOR)
-@Permission(false)
-@Permission({ id: "925836438648533072", permission: true, type: "ROLE" })
-@SlashGroup("wl", "Manage your whitelist information.")
-class WL {
-  @Slash("add")
+@Guard(HasRole("925836438648533072"))
+@SlashGroup({ name: "wl", description: "Manage your whitelist information." })
+export class WL {
+  @Slash()
   async add(
-    @SlashOption("wallet", {
+    @SlashOption({
+      name: "wallet",
       description: "The wallet to add to the whitelist.",
     })
     wallet: string,

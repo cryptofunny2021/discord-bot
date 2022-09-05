@@ -2,8 +2,8 @@ import * as server from "../lib/server.js";
 import { Discord, SimpleCommand, SimpleCommandMessage } from "discordx";
 
 @Discord()
-abstract class Pink {
-  @SimpleCommand("pink", { aliases: ["smolist"] })
+export class Pink {
+  @SimpleCommand({ aliases: ["smolist"], name: "pink" })
   async pink(command: SimpleCommandMessage) {
     if (!server.isSmolBrains(command.message.guildId)) {
       return;

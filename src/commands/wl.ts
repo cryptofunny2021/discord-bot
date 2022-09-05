@@ -9,8 +9,8 @@ function getRandom(min: number, max: number) {
 }
 
 @Discord()
-abstract class WL {
-  @SimpleCommand("wl")
+export class WL {
+  @SimpleCommand()
   async wl(command: SimpleCommandMessage) {
     if (!server.isEnjoyor(command.message.guildId)) {
       return;

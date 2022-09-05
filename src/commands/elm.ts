@@ -6,8 +6,8 @@ import state from "../lib/elm.js";
 const TOKEN_LOGO = "https://magicswap.lol/img/tokens/elm.png";
 
 @Discord()
-abstract class Ellerium {
-  @SimpleCommand("elm")
+export class Ellerium {
+  @SimpleCommand()
   async elm(command: SimpleCommandMessage) {
     const { message } = command;
     const { channelId } = message;
@@ -32,7 +32,7 @@ abstract class Ellerium {
                 inline: true,
                 name: "Price",
                 value: elm.price,
-              }
+              },
             ],
             thumbnail: {
               url: TOKEN_LOGO,
