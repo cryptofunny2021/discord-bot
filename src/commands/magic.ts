@@ -17,8 +17,6 @@ export class Magic {
     const { channelId } = message;
     const magic = snapshot(state);
 
-    console.log("herre");
-
     if (channelId === "882872974972162118") {
       return;
     }
