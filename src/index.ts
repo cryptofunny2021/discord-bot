@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import "dotenv/config";
+import "./lib/extractors.js";
 
 import { Interaction, Message } from "discord.js";
 import { dirname, importx } from "@discordx/importer";
