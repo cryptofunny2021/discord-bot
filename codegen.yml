@@ -1,5 +1,16 @@
 overwrite: true
 generates:
+  generated/hasura.graphql.ts:
+    schema:
+      - ${HASURA_URL}:
+          headers:
+            x-hasura-role: tressy
+            x-hasura-user-id: ${HASURA_API_KEY}
+    documents: "src/graphql/hasura/*.graphql.ts"
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-graphql-request"
   generated/marketplace.graphql.ts:
     schema: ${MARKETPLACE_URL}
     documents: "src/graphql/marketplace/*.graphql.ts"

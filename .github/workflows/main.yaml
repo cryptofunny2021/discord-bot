@@ -27,5 +27,7 @@ jobs:
           push: true
           tags: wyze/discord-bot:latest
           secrets: |
-            "dotenv=MARKETPLACE_URL=${{ secrets.MARKETPLACE_URL }}
+            "dotenv=HASURA_API_KEY=${{ secrets.HASURA_API_KEY }}
+            HASURA_URL=${{ secrets.HASURA_URL }}
+            MARKETPLACE_URL=${{ secrets.MARKETPLACE_URL }}
             SNAPSHOT_URL=${{ secrets.SNAPSHOT_URL }}"

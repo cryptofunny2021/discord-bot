@@ -1,5 +1,9 @@
 import { Discord, SimpleCommand, SimpleCommandMessage } from "discordx";
 import { gotScraping } from "got-scraping";
+import { GraphQLClient } from "graphql-request";
+import { getSdk } from "../../generated/hasura.graphql.js";
+
+const spacer = { inline: true, name: "\u200b", value: "\u200b" };
 
 const percent = Intl.NumberFormat("en-US", {
   maximumFractionDigits: 2,
@@ -8,6 +12,15 @@ const percent = Intl.NumberFormat("en-US", {
 
 const MAGIC_LOGO =
   "https://i.postimg.cc/1XcZH0Vg/Magic-logomark-On-Light-AW.png";
+
+const client = getSdk(
+  new GraphQLClient(`${process.env.HASURA_URL}`, {
+    headers: {
+      "x-hasura-user-id": `${process.env.HASURA_API_KEY}`,
+      "x-hasura-role": "tressy",
+    },
+  })
+);
 
 @Discord()
 export class Harvesters {
@@ -26,11 +39,13 @@ export class Harvesters {
       const data = await gotScraping("https://api.treasure.lol/mines").json<
         Array<{
           address: string;
-          name?: string;
+          name: string;
           emissionsShare: number;
           emissionsPerSecond: number;
         }>
       >();
+
+      const boosts = await client.getHarvesterExtractors();
 
       await command.message.channel.send({
         embeds: [
@@ -38,10 +53,36 @@ export class Harvesters {
             title: "Bridgeworld Emissions",
             description: "",
             color: 0xdd524d,
-            fields: data.map((item) => ({
-              name: item.name ?? "Asiterra",
-              value: percent.format(item.emissionsShare),
-            })),
+            fields: data
+              .map((item) => {
+                const boost = [
+                  boosts.harvester_extractors.find(
+                    (extractor) => extractor.name === item.name
+                  ),
+                ]
+                  .filter(Boolean)
+                  .map(
+                    (extractor) =>
+                      `${extractor?.staked} for ${extractor?.boost}%`
+                  )
+                  .flat()
+                  .join("");
+
+                return [
+                  {
+                    inline: true,
+                    name: item.name,
+                    value: percent.format(item.emissionsShare),
+                  },
+                  spacer,
+                  {
+                    inline: true,
+                    name: "Extractor Info",
+                    value: item.name === "Atlas Mine" ? "N/A" : boost || "None",
+                  },
+                ];
+              })
+              .flat(),
             thumbnail: {
               url: MAGIC_LOGO,
               height: 64,
