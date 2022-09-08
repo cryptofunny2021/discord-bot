@@ -45,7 +45,8 @@ export class Harvesters {
         }>
       >();
 
-      const boosts = await client.getHarvesterExtractors();
+      const { __typename, ...boosts } =
+        await client.getHarvesterExtractorBoosts();
 
       await command.message.channel.send({
         embeds: [
@@ -55,17 +56,16 @@ export class Harvesters {
             color: 0xdd524d,
             fields: data
               .map((item) => {
-                const boost = [
-                  boosts.harvester_extractors.find(
-                    (extractor) => extractor.name === item.name
-                  ),
-                ]
-                  .filter(Boolean)
-                  .map(
-                    (extractor) =>
-                      `${extractor?.staked} for ${extractor?.boost}%`
+                const boost = Object.entries(boosts)
+                  .filter(
+                    ([key, extractor]) =>
+                      key === item.name.toLowerCase() &&
+                      typeof extractor?.aggregate?.sum?.staked === "number"
                   )
-                  .flat()
+                  .map(
+                    ([, extractor]) =>
+                      `${extractor?.aggregate?.sum?.staked} for ${extractor.aggregate?.sum?.boost}%`
+                  )
                   .join("");
 
                 return [
