@@ -40,12 +40,12 @@ async function fetch() {
 
   const [{ block_number: blockNumber, size }] = data;
 
-  state.blockNumber = blockNumber;
+  // state.blockNumber = blockNumber;
 
   // First run, now we have a starting block number
-  if (state.blockNumber === 0) {
-    return;
-  }
+  // if (state.blockNumber === 0) {
+  //   return;
+  // }
 
   // Group by Harvester, then build description of each
   const fields = data.reduce<Record<string, Record<string, number>>>(
@@ -69,7 +69,8 @@ async function fetch() {
   const channel = guild?.channels.cache.get("958963188903329792");
 
   if (channel?.type === ChannelType.GuildText) {
-    await channel?.send({
+    console.log("messaging...");
+    await channel.send({
       embeds: [
         {
           title: `Extractor${pluralize(data.length)} Deployed`,
@@ -78,6 +79,7 @@ async function fetch() {
           fields: Object.entries(fields).map(([name, item]) => ({
             name,
             value: Object.entries(item)
+              .sort(([, left], [, right]) => right - left)
               .map(
                 ([size, quantity]) =>
                   `${quantity} ${size} Extractor${pluralize(quantity)}`
@@ -90,7 +92,8 @@ async function fetch() {
             width: 64,
           },
           footer: {
-            text: "Powered by Arbivents",
+            text: "Powered by Honeycomb",
+            icon_url: "https://i.postimg.cc/K8c8tX1D/honeycomb.png",
           },
         },
       ],

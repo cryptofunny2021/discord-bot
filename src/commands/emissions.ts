@@ -3,8 +3,6 @@ import { gotScraping } from "got-scraping";
 import { GraphQLClient } from "graphql-request";
 import { getSdk } from "../../generated/hasura.graphql.js";
 
-const spacer = { inline: true, name: "\u200b", value: "\u200b" };
-
 const percent = Intl.NumberFormat("en-US", {
   maximumFractionDigits: 2,
   style: "percent",
@@ -74,7 +72,11 @@ export class Harvesters {
                     name: item.name,
                     value: percent.format(item.emissionsShare),
                   },
-                  spacer,
+                  {
+                    inline: true,
+                    name: "MAGIC/Day",
+                    value: (item.emissionsPerSecond * 86_400).toLocaleString(),
+                  },
                   {
                     inline: true,
                     name: "Extractor Info",
@@ -89,7 +91,7 @@ export class Harvesters {
               width: 64,
             },
             footer: {
-              text: "Powered by Treasure API",
+              text: "Powered by Treasure",
               icon_url: "https://bridgeworld.treasure.lol/favicon-32x32.png",
             },
           },
