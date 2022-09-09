@@ -1,25 +1,9 @@
+import { formatDistanceToNowStrict } from "date-fns";
 import { Discord, SimpleCommand, SimpleCommandMessage } from "discordx";
-import { gotScraping } from "got-scraping";
-import { GraphQLClient } from "graphql-request";
-import { getSdk } from "../../generated/hasura.graphql.js";
-import { pluralize } from "../lib/helpers.js";
-
-const percent = Intl.NumberFormat("en-US", {
-  maximumFractionDigits: 2,
-  style: "percent",
-});
+import emissions from "../lib/emissions.js";
 
 const MAGIC_LOGO =
   "https://i.postimg.cc/1XcZH0Vg/Magic-logomark-On-Light-AW.png";
-
-const client = getSdk(
-  new GraphQLClient(`${process.env.HASURA_URL}`, {
-    headers: {
-      "x-hasura-user-id": `${process.env.HASURA_API_KEY}`,
-      "x-hasura-role": "tressy",
-    },
-  })
-);
 
 @Discord()
 export class Harvesters {
@@ -32,20 +16,14 @@ export class Harvesters {
       return;
     }
 
+    if (emissions.data.length === 0) {
+      await command.message.reply("No emissions data currently.");
+
+      return;
+    }
+
     try {
       await message.channel.sendTyping();
-
-      const data = await gotScraping("https://api.treasure.lol/mines").json<
-        Array<{
-          address: string;
-          name: string;
-          emissionsShare: number;
-          emissionsPerSecond: number;
-        }>
-      >();
-
-      const { __typename, ...boosts } =
-        await client.getHarvesterExtractorBoosts();
 
       await command.message.channel.send({
         embeds: [
@@ -53,40 +31,17 @@ export class Harvesters {
             title: "Bridgeworld Emissions",
             description: "",
             color: 0xdd524d,
-            fields: data.map((item) => {
-              const boost = Object.entries(boosts)
-                .filter(
-                  ([key, extractor]) =>
-                    key === item.name.toLowerCase() &&
-                    typeof extractor?.aggregate?.sum?.staked === "number"
-                )
-                .map(
-                  ([, extractor]) =>
-                    `${extractor?.aggregate?.sum?.staked} extractor${pluralize(
-                      extractor?.aggregate?.sum?.staked ?? 0
-                    )} for ${extractor.aggregate?.sum?.boost}%`
-                )
-                .join("");
-
-              return {
-                name: item.name,
-                value: [
-                  `${percent.format(item.emissionsShare)} for ${Math.round(
-                    item.emissionsPerSecond * 86_400
-                  ).toLocaleString()} MAGIC/day`,
-                  boost,
-                ]
-                  .filter(Boolean)
-                  .join("\n"),
-              };
-            }),
+            fields: emissions.data,
             thumbnail: {
               url: MAGIC_LOGO,
               height: 64,
               width: 64,
             },
             footer: {
-              text: "Powered by Treasure",
+              text: `Powered by Treasure • ${formatDistanceToNowStrict(
+                emissions.timestamp,
+                { addSuffix: true }
+              )}`,
               icon_url: "https://bridgeworld.treasure.lol/favicon-32x32.png",
             },
           },
