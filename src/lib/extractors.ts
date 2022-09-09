@@ -4,6 +4,7 @@ import { proxy, snapshot } from "valtio/vanilla";
 import client from "./client.js";
 import * as server from "./server.js";
 import { ChannelType } from "discord.js";
+import { pluralize } from "./helpers.js";
 
 const images: Record<string, string> = {
   Small:
@@ -13,8 +14,6 @@ const images: Record<string, string> = {
   Large:
     "https://djmahssgw62sw.cloudfront.net/arb/0xf3d00a2559d84de7ac093443bcaada5f4ee4165c/0x5b60b96397c08eabe74933cf60e3ebe708b985dafab06e9d1b3aeb21d5dce2e4/image.jpg",
 };
-
-const pluralize = (value: number) => (value === 1 ? "" : "s");
 
 const state = proxy({
   blockNumber: 0,

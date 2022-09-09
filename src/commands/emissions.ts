@@ -2,6 +2,7 @@ import { Discord, SimpleCommand, SimpleCommandMessage } from "discordx";
 import { gotScraping } from "got-scraping";
 import { GraphQLClient } from "graphql-request";
 import { getSdk } from "../../generated/hasura.graphql.js";
+import { pluralize } from "../lib/helpers.js";
 
 const percent = Intl.NumberFormat("en-US", {
   maximumFractionDigits: 2,
@@ -52,39 +53,33 @@ export class Harvesters {
             title: "Bridgeworld Emissions",
             description: "",
             color: 0xdd524d,
-            fields: data
-              .map((item) => {
-                const boost = Object.entries(boosts)
-                  .filter(
-                    ([key, extractor]) =>
-                      key === item.name.toLowerCase() &&
-                      typeof extractor?.aggregate?.sum?.staked === "number"
-                  )
-                  .map(
-                    ([, extractor]) =>
-                      `${extractor?.aggregate?.sum?.staked} for ${extractor.aggregate?.sum?.boost}%`
-                  )
-                  .join("");
+            fields: data.map((item) => {
+              const boost = Object.entries(boosts)
+                .filter(
+                  ([key, extractor]) =>
+                    key === item.name.toLowerCase() &&
+                    typeof extractor?.aggregate?.sum?.staked === "number"
+                )
+                .map(
+                  ([, extractor]) =>
+                    `${extractor?.aggregate?.sum?.staked} extractor${pluralize(
+                      extractor?.aggregate?.sum?.staked ?? 0
+                    )} for ${extractor.aggregate?.sum?.boost}%`
+                )
+                .join("");
 
-                return [
-                  {
-                    inline: true,
-                    name: item.name,
-                    value: percent.format(item.emissionsShare),
-                  },
-                  {
-                    inline: true,
-                    name: "MAGIC/Day",
-                    value: (item.emissionsPerSecond * 86_400).toLocaleString(),
-                  },
-                  {
-                    inline: true,
-                    name: "Extractor Info",
-                    value: item.name === "Atlas Mine" ? "N/A" : boost || "None",
-                  },
-                ];
-              })
-              .flat(),
+              return {
+                name: item.name,
+                value: [
+                  `${percent.format(item.emissionsShare)} for ${Math.round(
+                    item.emissionsPerSecond * 86_400
+                  ).toLocaleString()} MAGIC/day`,
+                  boost,
+                ]
+                  .filter(Boolean)
+                  .join("\n"),
+              };
+            }),
             thumbnail: {
               url: MAGIC_LOGO,
               height: 64,
