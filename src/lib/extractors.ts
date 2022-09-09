@@ -40,12 +40,12 @@ async function fetch() {
 
   const [{ block_number: blockNumber, size }] = data;
 
-  // state.blockNumber = blockNumber;
+  state.blockNumber = blockNumber;
 
   // First run, now we have a starting block number
-  // if (state.blockNumber === 0) {
-  //   return;
-  // }
+  if (state.blockNumber === 0) {
+    return;
+  }
 
   // Group by Harvester, then build description of each
   const fields = data.reduce<Record<string, Record<string, number>>>(
