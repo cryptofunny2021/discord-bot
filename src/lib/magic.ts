@@ -67,7 +67,7 @@ async function fetch() {
       state.timestamp = Date.now();
     } catch (error) {
       if (error instanceof Error) {
-        console.log("Error fetching price", error.message);
+        console.log(`Error fetching MAGIC price\n${error.stack}`);
       }
     }
   });

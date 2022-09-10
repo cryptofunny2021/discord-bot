@@ -29,81 +29,88 @@ const hasura = getSdk(
 );
 
 async function fetch() {
-  const { harvester_extractor: data } = await hasura.getHarvesterExtractors({
-    blockNumber: state.blockNumber,
-  });
-
-  if (!data[0]) {
-    return;
-  }
-
-  const [{ block_number: blockNumber, size }] = data;
-
-  state.blockNumber = blockNumber;
-
-  // First run, now we have a starting block number
-  if (state.blockNumber === 0) {
-    return;
-  }
-
-  // Group by Harvester, then build description of each
-  const fields = data.reduce<Record<string, Record<string, number>>>(
-    (acc, item) => {
-      if (!item.name || !item.size || !item.staked) {
-        throw new Error("No name");
-      }
-
-      acc[item.name] ??= {};
-      acc[item.name][item.size] ??= 0;
-      acc[item.name][item.size] += item.staked;
-
-      return acc;
-    },
-    {}
-  );
-
-  const guild = client.guilds.cache.get(server.TREASURE);
-
-  // Moonbois
-  const channel = guild?.channels.cache.get("958963188903329792");
-
-  if (channel?.type === ChannelType.GuildText) {
-    console.log("messaging...");
-    await channel.send({
-      embeds: [
-        {
-          title: `Extractor${pluralize(data.length)} Deployed`,
-          description: "",
-          color: 0xdd524d,
-          fields: Object.entries(fields).map(([name, item]) => ({
-            name,
-            value: Object.entries(item)
-              .sort(([, left], [, right]) => right - left)
-              .map(
-                ([size, quantity]) =>
-                  `${quantity} ${size} Extractor${pluralize(quantity)}`
-              )
-              .join(", "),
-          })),
-          thumbnail: {
-            url: images[size ?? "Small"],
-            height: 64,
-            width: 64,
-          },
-          footer: {
-            text: "Powered by Honeycomb",
-            icon_url: "https://i.postimg.cc/K8c8tX1D/honeycomb.png",
-          },
-        },
-      ],
+  try {
+    const { harvester_extractor: data } = await hasura.getHarvesterExtractors({
+      blockNumber: state.blockNumber,
     });
+
+    if (!data[0]) {
+      return;
+    }
+
+    const { blockNumber } = snapshot(state);
+    const [{ size, ...item }] = data;
+
+    state.blockNumber = item.block_number;
+
+    // First run, now we have a starting block number
+    if (blockNumber === 0) {
+      return;
+    }
+
+    // Group by Harvester, then build description of each
+    const fields = data.reduce<Record<string, Record<string, number>>>(
+      (acc, item) => {
+        if (!item.name || !item.size || !item.staked) {
+          throw new Error("No name");
+        }
+
+        acc[item.name] ??= {};
+        acc[item.name][item.size] ??= 0;
+        acc[item.name][item.size] += item.staked;
+
+        return acc;
+      },
+      {}
+    );
+
+    await client.guilds.fetch();
+
+    const guild = client.guilds.cache.get(server.TREASURE);
+
+    // Moonbois
+    const channel = guild?.channels.cache.get("958963188903329792");
+
+    if (channel?.type === ChannelType.GuildText) {
+      await channel.send({
+        embeds: [
+          {
+            title: `Extractor${pluralize(data.length)} Deployed`,
+            description: "",
+            color: 0xdd524d,
+            fields: Object.entries(fields).map(([name, item]) => ({
+              name,
+              value: Object.entries(item)
+                .sort(([, left], [, right]) => right - left)
+                .map(
+                  ([size, quantity]) =>
+                    `${quantity} ${size} Extractor${pluralize(quantity)}`
+                )
+                .join(", "),
+            })),
+            thumbnail: {
+              url: images[size ?? "Small"],
+              height: 64,
+              width: 64,
+            },
+            footer: {
+              text: "Powered by Honeycomb",
+              icon_url: "https://i.postimg.cc/K8c8tX1D/honeycomb.png",
+            },
+          },
+        ],
+      });
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.log(`Error fetching extractors\n${error.stack}`);
+    }
   }
 }
 
-const { blockNumber } = snapshot(state);
-
-// Refresh every 30 seconds
-if (blockNumber === 0) {
+export function listen() {
   fetch();
+
+  // Refresh every 30 seconds
   setInterval(fetch, 30_000);
 }

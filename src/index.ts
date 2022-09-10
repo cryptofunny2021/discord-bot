@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import "dotenv/config";
-import "./lib/extractors.js";
+
+import * as extractors from "./lib/extractors.js";
 
 import { Interaction, Message } from "discord.js";
 import { dirname, importx } from "@discordx/importer";
@@ -22,6 +23,8 @@ client.once("ready", async () => {
       activities: [{ name: `$MAGIC: ${price}`, type: 3 }],
     });
   });
+
+  extractors.listen();
 
   console.log("Bot started!");
 });

@@ -68,7 +68,7 @@ async function fetch() {
     state.timestamp = Date.now();
   } catch (error) {
     if (error instanceof Error) {
-      console.log("Error fetching emissions", error.message);
+      console.log(`Error fetching emissions\n${error.stack}`);
     }
   }
 }
