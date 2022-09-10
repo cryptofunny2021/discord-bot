@@ -1,5 +1,5 @@
-import { CommandInteraction, GuildMemberRoleManager } from "discord.js";
-import { GuardFunction, SimpleCommandMessage } from "discordx";
+import { CommandInteraction, GuildMemberRoleManager } from 'discord.js'
+import { GuardFunction, SimpleCommandMessage } from 'discordx'
 
 export function HasRole(id: string): any {
   const guard: GuardFunction<
@@ -8,21 +8,21 @@ export function HasRole(id: string): any {
     const member =
       interaction instanceof SimpleCommandMessage
         ? interaction.message.member
-        : interaction.member;
+        : interaction.member
 
     if (
       member?.roles instanceof GuildMemberRoleManager &&
       member.roles.cache.some((role) => role.id === id)
     ) {
-      await next();
+      await next()
     }
 
     if (Array.isArray(member?.roles) && member?.roles.includes(id)) {
-      await next();
+      await next()
     }
-  };
+  }
 
-  return guard;
+  return guard
 }
 
 export function InChannel(id: string): any {
@@ -32,14 +32,14 @@ export function InChannel(id: string): any {
     const channelId =
       interaction instanceof SimpleCommandMessage
         ? interaction.message.channelId
-        : interaction.channelId;
+        : interaction.channelId
 
     if (channelId === id) {
-      await next();
+      await next()
     }
-  };
+  }
 
-  return guard;
+  return guard
 }
 
 export function IsUser(id: string): any {
@@ -49,12 +49,12 @@ export function IsUser(id: string): any {
     const userId =
       interaction instanceof SimpleCommandMessage
         ? interaction.message.author.id
-        : interaction.user.id;
+        : interaction.user.id
 
     if (userId === id) {
-      await next();
+      await next()
     }
-  };
+  }
 
-  return guard;
+  return guard
 }

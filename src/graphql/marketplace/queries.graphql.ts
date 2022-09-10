@@ -1,4 +1,4 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag'
 
 export const getSmolDetails = gql`
   query GetSmolDetails($tokenId: BigInt!) {
@@ -30,7 +30,7 @@ export const getSmolDetails = gql`
       }
     }
   }
-`;
+`
 
 export const getFloorPrices = gql`
   query getFloorPrices {
@@ -77,4 +77,4 @@ export const getFloorPrices = gql`
       pricePerItem
     }
   }
-`;
+`

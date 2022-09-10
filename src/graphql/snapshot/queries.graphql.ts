@@ -1,4 +1,4 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag'
 
 export const getRocketSnapshot = gql`
   query getRocketSnapshot($where: Boarded_filter) {
@@ -13,16 +13,11 @@ export const getRocketSnapshot = gql`
       }
     }
   }
-`;
+`
 
 export const getTokenSnapshot = gql`
   query getTokenSnapshot($where: Token_filter) {
-    tokens(
-      first: 1000
-      orderBy: id
-      orderDirection: asc
-      where: $where
-    ) {
+    tokens(first: 1000, orderBy: id, orderDirection: asc, where: $where) {
       id
       owners {
         user {
@@ -31,4 +26,4 @@ export const getTokenSnapshot = gql`
       }
     }
   }
-`;
+`

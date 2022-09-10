@@ -1,9 +1,9 @@
-import { Client } from "discordx";
-import { GatewayIntentBits, IntentsBitField } from "discord.js";
+import { GatewayIntentBits, IntentsBitField } from 'discord.js'
+import { Client } from 'discordx'
 
 export default new Client({
   simpleCommand: {
-    prefix: "!",
+    prefix: '!',
   },
   intents: [
     GatewayIntentBits.Guilds,
@@ -11,4 +11,4 @@ export default new Client({
     GatewayIntentBits.GuildMessageReactions,
     IntentsBitField.Flags.MessageContent,
   ],
-});
+})

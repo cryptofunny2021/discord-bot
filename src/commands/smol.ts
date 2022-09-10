@@ -1,40 +1,41 @@
-import * as school from "../abis/school.js";
-import * as smolbrain from "../abis/smolbrain.js";
-import { BigNumber, ethers } from "ethers";
-import { Discord, SimpleCommand, SimpleCommandMessage } from "discordx";
-import { GraphQLClient } from "graphql-request";
-import { formatDistanceToNow } from "date-fns";
-import { getSdk } from "../../generated/marketplace.graphql.js";
+import { formatDistanceToNow } from 'date-fns'
+import { Discord, SimpleCommand, SimpleCommandMessage } from 'discordx'
+import { BigNumber, ethers } from 'ethers'
+import { GraphQLClient } from 'graphql-request'
 
-const percent = Intl.NumberFormat("en-US", {
+import { getSdk } from '../../generated/marketplace.graphql.js'
+import * as school from '../abis/school.js'
+import * as smolbrain from '../abis/smolbrain.js'
+
+const percent = Intl.NumberFormat('en-US', {
   maximumFractionDigits: 2,
-  style: "percent",
-});
+  style: 'percent',
+})
 
-const round = Intl.NumberFormat("en-US", {
+const round = Intl.NumberFormat('en-US', {
   maximumFractionDigits: 2,
-});
+})
 
-const client = getSdk(new GraphQLClient(`${process.env.MARKETPLACE_URL}`));
+const client = getSdk(new GraphQLClient(`${process.env.MARKETPLACE_URL}`))
 
 const provider = new ethers.providers.JsonRpcProvider(
-  "https://arb-mainnet.g.alchemy.com/v2/koj2zAjEWZz5nhLYsdQEEls8UZCEpPRd"
-);
+  'https://arb-mainnet.g.alchemy.com/v2/koj2zAjEWZz5nhLYsdQEEls8UZCEpPRd'
+)
 
 const contract = new ethers.Contract(
-  "0x6325439389e0797ab35752b4f43a14c004f22a9c",
+  '0x6325439389e0797ab35752b4f43a14c004f22a9c',
   smolbrain.abi,
   provider
-);
+)
 
 const contract2 = new ethers.Contract(
-  "0x602e50ed10a90d324b35930ec0f8e5d3b28cd509",
+  '0x602e50ed10a90d324b35930ec0f8e5d3b28cd509',
   school.abi,
   provider
-);
+)
 
-const shorten = (value: string = "") =>
-  `${value.slice(0, 6)}...${value.slice(-4)}`;
+const shorten = (value: string = '') =>
+  `${value.slice(0, 6)}...${value.slice(-4)}`
 
 @Discord()
 export class Smol {
@@ -42,26 +43,26 @@ export class Smol {
   async smol(command: SimpleCommandMessage) {
     // Disabled everywhere for now
     if (1 + 1 === 2) {
-      return;
+      return
     }
 
-    const message = command.message;
-    const channel = message.guild?.channels.resolve(message.channelId);
+    const message = command.message
+    const channel = message.guild?.channels.resolve(message.channelId)
 
-    if (!channel?.name.includes("bot-spam")) {
-      return;
+    if (!channel?.name.includes('bot-spam')) {
+      return
     }
 
-    const tokenId = message.content.replace(/[^\d]+/, "");
+    const tokenId = message.content.replace(/[^\d]+/, '')
 
     if (!tokenId) {
-      return;
+      return
     }
 
-    await message.channel.sendTyping();
+    await message.channel.sendTyping()
 
     try {
-      const smol = await client.GetSmolDetails({ tokenId });
+      const smol = await client.GetSmolDetails({ tokenId })
 
       // @ts-ignore
       // const { network, deployments } = hre;
@@ -71,14 +72,14 @@ export class Smol {
       // const brain: BigInt = await read("SmolBrain", "brainz", tokenId);
       // const earned: BigInt = await read("School", "iqEarned", tokenId);
 
-      const brain: BigNumber = await contract.brainz(tokenId);
-      const earned: BigNumber = await contract2.iqEarned(tokenId);
+      const brain: BigNumber = await contract.brainz(tokenId)
+      const earned: BigNumber = await contract2.iqEarned(tokenId)
 
       if (!smol.collection) {
-        throw new Error("No collection");
+        throw new Error('No collection')
       }
 
-      const [token] = smol.collection.tokens;
+      const [token] = smol.collection.tokens
 
       // const rank = {
       //   name: "Rank",
@@ -93,7 +94,7 @@ export class Smol {
             inline: true,
             name,
             value:
-              name === "IQ"
+              name === 'IQ'
                 ? round.format(
                     Number(ethers.utils.formatUnits(brain.add(earned)))
                   )
@@ -101,58 +102,58 @@ export class Smol {
                     percentage
                   )})`,
           })
-        ) ?? [];
+        ) ?? []
 
       const owner = {
         inline: true,
-        name: "\n\u200b\nOwner",
+        name: '\n\u200b\nOwner',
         value: shorten(token.owner?.id),
-      };
+      }
 
-      const [listing] = token.listings ?? [];
+      const [listing] = token.listings ?? []
 
       const listings = listing
         ? [
             {
               inline: true,
-              name: "\n\u200b\nListed",
+              name: '\n\u200b\nListed',
               value: `${(listing.pricePerItem / 1e18).toLocaleString()} $MAGIC`,
             },
             {
               inline: true,
-              name: "\n\u200b\nExpires",
+              name: '\n\u200b\nExpires',
               value: formatDistanceToNow(Number(listing.expires)),
             },
           ]
         : [
-            { inline: true, name: "\n\u200b\nListed", value: "No" },
-            { inline: true, name: "\n\u200b\n", value: "\u200b" },
-          ];
+            { inline: true, name: '\n\u200b\nListed', value: 'No' },
+            { inline: true, name: '\n\u200b\n', value: '\u200b' },
+          ]
 
       command.message.channel.send({
         embeds: [
           {
             title: `Smol Brains #${tokenId}\n\u200b`,
-            description: "",
+            description: '',
             url: `https://marketplace.treasure.lol/collection/${smol.collection.id}/${token.tokenId}`,
             color: 0x7e22ce,
             fields: [...attributes, owner, ...listings],
             image: {
               url:
                 token.metadata?.image.replace(
-                  "ipfs://",
-                  "https://treasure-marketplace.mypinata.cloud/ipfs/"
-                ) ?? "",
+                  'ipfs://',
+                  'https://treasure-marketplace.mypinata.cloud/ipfs/'
+                ) ?? '',
               height: 0,
               width: 0,
             },
           },
         ],
-      });
+      })
     } catch (error) {
-      console.log(error);
+      console.log(error)
 
-      await command.message.channel.send("Error fetching information.");
+      await command.message.channel.send('Error fetching information.')
     }
   }
 }

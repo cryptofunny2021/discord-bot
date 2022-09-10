@@ -1,4 +1,4 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag'
 
 export const getHarvesterExtractorBoosts = gql`
   query getHarvesterExtractorBoosts {
@@ -31,7 +31,7 @@ export const getHarvesterExtractorBoosts = gql`
       }
     }
   }
-`;
+`
 
 export const getHarvesterExtractors = gql`
   query getHarvesterExtractors($blockNumber: numeric!) {
@@ -46,4 +46,4 @@ export const getHarvesterExtractors = gql`
       staked
     }
   }
-`;
+`

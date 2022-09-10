@@ -1,35 +1,36 @@
-import { formatDistanceToNowStrict } from "date-fns";
-import { Discord, SimpleCommand, SimpleCommandMessage } from "discordx";
-import emissions from "../lib/emissions.js";
+import { formatDistanceToNowStrict } from 'date-fns'
+import { Discord, SimpleCommand, SimpleCommandMessage } from 'discordx'
+
+import emissions from '../lib/emissions.js'
 
 const MAGIC_LOGO =
-  "https://i.postimg.cc/1XcZH0Vg/Magic-logomark-On-Light-AW.png";
+  'https://i.postimg.cc/1XcZH0Vg/Magic-logomark-On-Light-AW.png'
 
 @Discord()
 export class Harvesters {
   @SimpleCommand()
   async emissions(command: SimpleCommandMessage) {
-    const { message } = command;
-    const { channelId } = message;
+    const { message } = command
+    const { channelId } = message
 
-    if (channelId === "882872974972162118") {
-      return;
+    if (channelId === '882872974972162118') {
+      return
     }
 
     if (emissions.data.length === 0) {
-      await command.message.reply("No emissions data currently.");
+      await command.message.reply('No emissions data currently.')
 
-      return;
+      return
     }
 
     try {
-      await message.channel.sendTyping();
+      await message.channel.sendTyping()
 
       await command.message.channel.send({
         embeds: [
           {
-            title: "Bridgeworld Emissions",
-            description: "",
+            title: 'Bridgeworld Emissions',
+            description: '',
             color: 0xdd524d,
             fields: emissions.data,
             thumbnail: {
@@ -42,13 +43,13 @@ export class Harvesters {
                 emissions.timestamp,
                 { addSuffix: true }
               )}`,
-              icon_url: "https://bridgeworld.treasure.lol/favicon-32x32.png",
+              icon_url: 'https://bridgeworld.treasure.lol/favicon-32x32.png',
             },
           },
         ],
-      });
+      })
     } catch (error) {
-      console.log("!emissions Error: ", error);
+      console.log('!emissions Error: ', error)
     }
   }
 }

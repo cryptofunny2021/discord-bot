@@ -1,36 +1,37 @@
-import { formatDistanceToNowStrict } from "date-fns";
-import { Discord, SimpleCommand, SimpleCommandMessage } from "discordx";
-import { snapshot } from "valtio/vanilla";
-import state from "../lib/elm.js";
+import { formatDistanceToNowStrict } from 'date-fns'
+import { Discord, SimpleCommand, SimpleCommandMessage } from 'discordx'
+import { snapshot } from 'valtio/vanilla'
 
-const TOKEN_LOGO = "https://magicswap.lol/img/tokens/elm.png";
+import state from '../lib/elm.js'
+
+const TOKEN_LOGO = 'https://magicswap.lol/img/tokens/elm.png'
 
 @Discord()
 export class Ellerium {
   @SimpleCommand()
   async elm(command: SimpleCommandMessage) {
-    const { message } = command;
-    const { channelId } = message;
-    const elm = snapshot(state);
+    const { message } = command
+    const { channelId } = message
+    const elm = snapshot(state)
 
-    if (channelId === "882872974972162118") {
-      return;
+    if (channelId === '882872974972162118') {
+      return
     }
 
     try {
-      await message.channel.sendTyping();
+      await message.channel.sendTyping()
 
       await command.message.channel.send({
         embeds: [
           {
-            title: "$ELM Price",
-            description: "",
-            url: "https://dexscreener.com/arbitrum/0xf904469497e6a179a9d47a7b468e4be42ec56e65",
+            title: '$ELM Price',
+            description: '',
+            url: 'https://dexscreener.com/arbitrum/0xf904469497e6a179a9d47a7b468e4be42ec56e65',
             color: 0xdd524d,
             fields: [
               {
                 inline: true,
-                name: "Price",
+                name: 'Price',
                 value: elm.price,
               },
             ],
@@ -44,13 +45,13 @@ export class Ellerium {
                 elm.timestamp,
                 { addSuffix: true }
               )}`,
-              icon_url: "https://dexscreener.com/favicon.png",
+              icon_url: 'https://dexscreener.com/favicon.png',
             },
           },
         ],
-      });
+      })
     } catch (error) {
-      console.log("!elm Error: ", error);
+      console.log('!elm Error: ', error)
     }
   }
 }
