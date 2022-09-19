@@ -69,8 +69,8 @@ async function fetch() {
 
     const guild = client.guilds.cache.get(server.TREASURE)
 
-    // Moonbois
-    const channel = guild?.channels.cache.get('958963188903329792')
+    // Tressy
+    const channel = guild?.channels.cache.get('1020605524028440676')
 
     if (channel?.type === ChannelType.GuildText) {
       await channel.send({
