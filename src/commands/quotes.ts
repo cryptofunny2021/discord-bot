@@ -116,4 +116,25 @@ for ever and ever. HODL.`,
       console.log('!prayer Error: ', error)
     }
   }
+
+  @SimpleCommand()
+  @Guard(InChannel('958963188903329792'))
+  async engagement(command: SimpleCommandMessage) {
+    try {
+      await command.message.channel.send({
+        embeds: [
+          {
+            description: `The engagement levels have dropped but that's to be expected in a bear market. Even if I got zero engagement I would still post, in a way it's kind of become like a ritual for me to do and I find it therapeutic in a sense. It's wild to think I have been posting the news for the past 7 months and I am still having as much fun (if not more) than when I first started covering the ecosystem. I have met so many amazing people and I am forever grateful to the treasure community for embracing and enjoying my content. As someone who was in the web3 space in 2018, bear markets are tough but it's also the best time to build. I fully believe what treasure is creating will be here for the long term and am very excited to see what the future holds in store. I genuinely wish I could be spending more time hanging with you all here in discord but as a full-time student, it is hard to find the extra free time to do so. I fully believe if you are still engaging in the ecosystem it will work out when the bull market comes roaring back :grinning:`,
+            color: 48028,
+            timestamp: '2022-10-08T04:18:00.000Z',
+            footer: {
+              text: 'Kowl',
+            },
+          },
+        ],
+      })
+    } catch (error) {
+      console.log('!engagement Error: ', error)
+    }
+  }
 }
