@@ -4,7 +4,7 @@ import { Discord, SimpleCommand, SimpleCommandMessage } from 'discordx'
 import emissions from '../lib/emissions.js'
 
 const MAGIC_LOGO =
-  'https://i.postimg.cc/1XcZH0Vg/Magic-logomark-On-Light-AW.png'
+  'https://gateway.ipfscdn.io/ipfs/QmWQa5AXsT1rESYbpVJnRr2QzqiGmAmfEG8j94tX76iQk1'
 
 @Discord()
 export class Harvesters {
