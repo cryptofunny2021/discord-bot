@@ -1,6 +1,7 @@
 import { gotScraping } from 'got-scraping'
 import { proxy, snapshot } from 'valtio/vanilla'
 
+import { round } from './helpers.js'
 import pairsState from './pairs.js'
 import { queue } from './queue.js'
 
@@ -26,10 +27,12 @@ async function fetch() {
             console.log('~> Fetching DexScreener for', pair.id)
 
             const {
+              quoteTokenSymbol,
               tradingHistory: [info],
             } = await gotScraping(
               `https://io.dexscreener.com/u/trading-history/recent/arbitrum/${pair.id}`
             ).json<{
+              quoteTokenSymbol: string
               tradingHistory: Array<{
                 blockNumber: number
                 blockTimestamp: number
@@ -43,7 +46,12 @@ async function fetch() {
               }>
             }>()
 
-            return { id: pair.id, priceUsd: `$${info.priceUsd}` }
+            const priceUsd =
+              quoteTokenSymbol === 'GFLY'
+                ? round(parseFloat(info.volumeUsd) / parseFloat(info.amount1))
+                : round(parseFloat(info.priceUsd))
+
+            return { id: pair.id, priceUsd }
           })
       )
     )
