@@ -1,77 +1,65 @@
-import { formatDistanceToNowStrict, parseISO } from 'date-fns'
 import { gotScraping } from 'got-scraping'
 import { proxy, snapshot } from 'valtio/vanilla'
 
-import { queue } from './queue.js'
-
-type USD<T> = { usd: T }
+import coingecko from './coingecko.js'
+import dexscreener from './dexscreener.js'
+import { round } from './helpers.js'
 
 const state = proxy({
   ath: '',
   ath_date: '',
   change24h: '',
   high_24h: '',
+  lastBuyPrice: '',
   low_24h: '',
+  pairId: '0xb7e50106a5bd3cf21af210a755f9c8740890a8c9',
   price: '',
+  priceRaw: 0,
   timestamp: 0,
-})
-
-const round = Intl.NumberFormat('en-US', {
-  currency: 'USD',
-  maximumFractionDigits: 5,
-  style: 'currency',
+  tokenId: '0x539bde0d7dbd336b79148aa742883198bbf60342',
 })
 
 async function fetch() {
-  queue.add(async () => {
-    try {
-      const {
-        tradingHistory: [info],
-      } = await gotScraping(
-        'https://io.dexscreener.com/u/trading-history/recent/arbitrum/0xB7E50106A5bd3Cf21AF210A755F9C8740890A8c9'
-      ).json<{
-        tradingHistory: Array<{
-          blockNumber: number
-          blockTimestamp: number
-          txnHash: string
-          logIndex: number
-          type: 'buy' | 'sell'
-          priceUsd: string
-          volumeUsd: string
-          amount0: string
-          amount1: string
-        }>
-      }>()
+  console.log('~> Fetching MAGIC from Treasure')
 
-      state.price = `$${info.priceUsd}`
+  try {
+    const { magicUsd } = await gotScraping(
+      'https://api.treasure.lol/magic/price'
+    ).json<{
+      ethUsd: number
+      magicEth: number
+      magicUsd: number
+    }>()
 
-      const { market_data: data } = await gotScraping(
-        'https://api.coingecko.com/api/v3/coins/arbitrum-one/contract/0x539bde0d7dbd336b79148aa742883198bbf60342'
-      ).json<{
-        market_data: {
-          ath: USD<number>
-          ath_date: USD<string>
-          low_24h: USD<number>
-          high_24h: USD<number>
-          price_change_percentage_24h: number
-        }
-      }>()
+    state.price = round(magicUsd)
+    state.priceRaw = magicUsd
 
-      state.ath = round.format(data.ath.usd)
-      state.ath_date = formatDistanceToNowStrict(parseISO(data.ath_date.usd), {
-        addSuffix: true,
-      })
-      state.high_24h = round.format(data.high_24h.usd)
-      state.low_24h = round.format(data.low_24h.usd)
-      state.change24h = `${data.price_change_percentage_24h.toPrecision(3)}%`
+    const info = snapshot(dexscreener).tokens.find(
+      (info) => info.id.toLowerCase() === state.pairId
+    )
 
-      state.timestamp = Date.now()
-    } catch (error) {
-      if (error instanceof Error) {
-        console.log(`Error fetching MAGIC price\n${error.stack}`)
-      }
+    if (info) {
+      state.lastBuyPrice = info.priceUsd
     }
-  })
+
+    const data = snapshot(coingecko).tokens.find(
+      (info) => info.id === state.tokenId
+    )
+
+    if (data) {
+      state.ath = data.ath
+      state.ath_date = data.ath_date
+      state.high_24h = data.high_24h
+      state.low_24h = data.low_24h
+      state.change24h = data.change24h
+    }
+
+    state.timestamp = Date.now()
+  } catch (error) {
+    if (error instanceof Error) {
+      console.log(`Error fetching MAGIC price\n${error.stack}`)
+    }
+  }
 }
 
 const { timestamp } = snapshot(state)

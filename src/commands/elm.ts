@@ -4,6 +4,8 @@ import { snapshot } from 'valtio/vanilla'
 
 import state from '../lib/elm.js'
 
+const spacer = { inline: true, name: '\u200b', value: '\u200b' }
+
 const TOKEN_LOGO = 'https://magicswap.lol/img/tokens/elm.png'
 
 @Discord()
@@ -21,31 +23,52 @@ export class Ellerium {
     try {
       await message.channel.sendTyping()
 
+      const fields = [
+        {
+          inline: true,
+          name: 'Price',
+          value: elm.price,
+        },
+        elm.change24h
+          ? [
+              spacer,
+              {
+                inline: true,
+                name: '24 Hour Change',
+                value: elm.change24h,
+              },
+            ]
+          : [],
+        elm.lastBuyPrice
+          ? [
+              {
+                name: 'Last Buy Price',
+                value: elm.lastBuyPrice,
+              },
+            ]
+          : [],
+      ]
+        .flat()
+        .filter(Boolean)
+
       await command.message.channel.send({
         embeds: [
           {
             title: '$ELM Price',
-            description: '',
-            url: 'https://dexscreener.com/arbitrum/0xf904469497e6a179a9d47a7b468e4be42ec56e65',
+            description: `- View on [DexScreener](https://dexscreener.com/arbitrum/${elm.pairId})\n- Trade on [MagicSwap](https://magicswap.lol/?input=ELM&output=MAGIC)`,
             color: 0xe47454,
-            fields: [
-              {
-                inline: true,
-                name: 'Price',
-                value: elm.price,
-              },
-            ],
+            fields,
             thumbnail: {
               url: TOKEN_LOGO,
               height: 64,
               width: 64,
             },
             footer: {
-              text: `Powered by DEX Screener • ${formatDistanceToNowStrict(
+              text: `Powered by MagicSwap • ${formatDistanceToNowStrict(
                 elm.timestamp,
                 { addSuffix: true }
               )}`,
-              icon_url: 'https://dexscreener.com/favicon.png',
+              icon_url: 'https://magicswap.lol/img/favicon-32x32.png',
             },
           },
         ],

@@ -25,37 +25,52 @@ export class Magic {
     try {
       await message.channel.sendTyping()
 
-      await command.message.channel.send({
-        embeds: [
-          {
-            title: '$MAGIC Price',
-            description: '',
-            url: 'https://dexscreener.com/arbitrum/0xb7e50106a5bd3cf21af210a755f9c8740890a8c9',
-            color: 0xe02424,
-            fields: [
-              {
-                inline: true,
-                name: 'Price',
-                value: magic.price,
-              },
+      const fields = [
+        {
+          inline: true,
+          name: 'Price',
+          value: magic.price,
+        },
+        magic.change24h
+          ? [
               spacer,
               {
                 inline: true,
                 name: '24 Hour Change',
                 value: magic.change24h,
               },
-            ],
+            ]
+          : [],
+        magic.lastBuyPrice
+          ? [
+              {
+                name: 'Last Buy Price',
+                value: magic.lastBuyPrice,
+              },
+            ]
+          : [],
+      ]
+        .flat()
+        .filter(Boolean)
+
+      await command.message.channel.send({
+        embeds: [
+          {
+            title: '$MAGIC Price',
+            description: `- View on [DexScreener](https://dexscreener.com/arbitrum/${magic.pairId})\n- Trade on [SushiSwap](https://app.sushi.com/swap?inputCurrency=ETH&outputCurrency=0x539bdE0d7Dbd336b79148AA742883198BBF60342&chainId=42161)`,
+            color: 0xe02424,
+            fields,
             thumbnail: {
               url: MAGIC_LOGO,
               height: 64,
               width: 64,
             },
             footer: {
-              text: `Powered by DEX Screener • ${formatDistanceToNowStrict(
+              text: `Powered by Treasure • ${formatDistanceToNowStrict(
                 magic.timestamp,
                 { addSuffix: true }
               )}`,
-              icon_url: 'https://dexscreener.com/favicon.png',
+              icon_url: 'https://bridgeworld.treasure.lol/favicon-32x32.png',
             },
           },
         ],
@@ -74,6 +89,34 @@ export class Magic {
     try {
       await message.channel.sendTyping()
 
+      const fields = [
+        {
+          inline: true,
+          name: 'Price',
+          value: magic.price,
+        },
+        magic.change24h
+          ? [
+              spacer,
+              {
+                inline: true,
+                name: '24 Hour Change',
+                value: magic.change24h,
+              },
+            ]
+          : [],
+        magic.lastBuyPrice
+          ? [
+              {
+                name: 'Last Buy Price',
+                value: magic.lastBuyPrice,
+              },
+            ]
+          : [],
+      ]
+        .flat()
+        .filter(Boolean)
+
       await command.message.channel.send({
         embeds: [
           {
@@ -81,19 +124,7 @@ export class Magic {
             description: '',
             url: `https://defined.fi/arb/0xb7e50106a5bd3cf21af210a755f9c8740890a8c9`,
             color: 0xdd524d,
-            fields: [
-              {
-                inline: true,
-                name: 'Price',
-                value: magic.price,
-              },
-              spacer,
-              {
-                inline: true,
-                name: '24 Hour Change',
-                value: magic.change24h,
-              },
-            ],
+            fields,
             thumbnail: {
               url: MAGIC_LOGO,
               height: 64,
@@ -143,7 +174,7 @@ export class Magic {
         ],
       })
     } catch (error) {
-      console.log('!magic Error: ', error)
+      console.log('!magicstats Error: ', error)
     }
   }
 }

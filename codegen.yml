@@ -11,6 +11,13 @@ generates:
       - "typescript"
       - "typescript-operations"
       - "typescript-graphql-request"
+  generated/magicswap.graphql.ts:
+    schema: ${MAGICSWAP_URL}
+    documents: "src/graphql/magicswap/*.graphql.ts"
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-graphql-request"
   generated/marketplace.graphql.ts:
     schema: ${MARKETPLACE_URL}
     documents: "src/graphql/marketplace/*.graphql.ts"

@@ -17,7 +17,9 @@ const state = proxy({
 
 async function fetch() {
   try {
-    const pair = snapshot(pairs).pairs.find((pair) => pair.name === 'ELM-MAGIC')
+    const pair = snapshot(pairs).pairs.find(
+      (pair) => pair.name === 'GFLY-MAGIC'
+    )
     const { priceRaw } = snapshot(magic)
 
     if (!pair) {
@@ -47,7 +49,7 @@ async function fetch() {
     state.timestamp = Date.now()
   } catch (error) {
     if (error instanceof Error) {
-      console.log(`Error fetching ELM price\n${error.stack}`)
+      console.log(`Error fetching gFLY price\n${error.stack}`)
     }
   }
 }
