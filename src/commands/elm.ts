@@ -27,7 +27,7 @@ export class Ellerium {
             title: '$ELM Price',
             description: '',
             url: 'https://dexscreener.com/arbitrum/0xf904469497e6a179a9d47a7b468e4be42ec56e65',
-            color: 0xdd524d,
+            color: 0xe47454,
             fields: [
               {
                 inline: true,

@@ -31,7 +31,7 @@ export class Magic {
             title: '$MAGIC Price',
             description: '',
             url: 'https://dexscreener.com/arbitrum/0xb7e50106a5bd3cf21af210a755f9c8740890a8c9',
-            color: 0xdd524d,
+            color: 0xe02424,
             fields: [
               {
                 inline: true,
