@@ -55,7 +55,7 @@ export class GFly {
         embeds: [
           {
             title: '$gFLY',
-            description: `- View on [DexScreener](https://dexscreener.com/arbitrum/${gfly.pairId})\n- Trade on [MagicSwap](https://magicswap.lol/?input=GFLY&output=MAGIC)`,
+            description: `- View on [DexScreener](https://dexscreener.com/arbitrum/${gfly.pairId})\n- Trade on [MagicSwap](https://magicswap.lol/?input=MAGIC&output=GFLY)`,
             color: 0x04ccac,
             fields,
             thumbnail: {

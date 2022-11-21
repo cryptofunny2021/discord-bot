@@ -55,7 +55,7 @@ export class Ellerium {
         embeds: [
           {
             title: '$ELM',
-            description: `- View on [DexScreener](https://dexscreener.com/arbitrum/${elm.pairId})\n- Trade on [MagicSwap](https://magicswap.lol/?input=ELM&output=MAGIC)`,
+            description: `- View on [DexScreener](https://dexscreener.com/arbitrum/${elm.pairId})\n- Trade on [MagicSwap](https://magicswap.lol/?input=MAGIC&output=ELM)`,
             color: 0xe47454,
             fields,
             thumbnail: {
