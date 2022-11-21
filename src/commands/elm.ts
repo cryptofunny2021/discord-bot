@@ -54,7 +54,7 @@ export class Ellerium {
       await command.message.channel.send({
         embeds: [
           {
-            title: '$ELM Price',
+            title: '$ELM',
             description: `- View on [DexScreener](https://dexscreener.com/arbitrum/${elm.pairId})\n- Trade on [MagicSwap](https://magicswap.lol/?input=ELM&output=MAGIC)`,
             color: 0xe47454,
             fields,

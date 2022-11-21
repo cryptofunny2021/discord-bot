@@ -23,38 +23,11 @@ export class GFly {
     try {
       await message.channel.sendTyping()
 
-      // Not launched yet
-      if (gfly.timestamp === 0) {
-        await command.message.channel.send({
-          embeds: [
-            {
-              title: '$gFLY',
-              description: '',
-              color: 0x04ccac,
-              fields: [
-                {
-                  inline: true,
-                  name: 'Launching on MagicSwap',
-                  value: '<t:1669071600:R>',
-                },
-              ],
-              thumbnail: {
-                url: TOKEN_LOGO,
-                height: 64,
-                width: 64,
-              },
-            },
-          ],
-        })
-
-        return
-      }
-
       const fields = [
         {
           inline: true,
           name: 'Price',
-          value: gfly.price,
+          value: gfly.price || 'Unknown',
         },
         gfly.change24h
           ? [
@@ -81,8 +54,8 @@ export class GFly {
       await command.message.channel.send({
         embeds: [
           {
-            title: '$gFLY Price',
-            description: `View on [DexScreener](https://dexscreener.com/arbitrum/${gfly.pairId})\n- Trade on [MagicSwap](https://magicswap.lol/?input=GFLY&output=MAGIC)`,
+            title: '$gFLY',
+            description: `- View on [DexScreener](https://dexscreener.com/arbitrum/${gfly.pairId})\n- Trade on [MagicSwap](https://magicswap.lol/?input=GFLY&output=MAGIC)`,
             color: 0x04ccac,
             fields,
             thumbnail: {

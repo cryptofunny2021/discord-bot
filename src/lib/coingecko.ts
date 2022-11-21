@@ -41,7 +41,7 @@ async function fetch() {
             const { market_data: data } = await gotScraping(
               `https://api.coingecko.com/api/v3/coins/arbitrum-one/contract/${id}`
             ).json<{
-              market_data: {
+              market_data?: {
                 ath: USD<number>
                 ath_date: USD<string>
                 low_24h: USD<number>
@@ -49,6 +49,17 @@ async function fetch() {
                 price_change_percentage_24h: number
               }
             }>()
+
+            if (!data) {
+              return {
+                id,
+                ath: '',
+                ath_date: '',
+                high_24h: '',
+                low_24h: '',
+                change24h: '',
+              }
+            }
 
             return {
               id,

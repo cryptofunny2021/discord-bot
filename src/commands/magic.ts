@@ -56,7 +56,7 @@ export class Magic {
       await command.message.channel.send({
         embeds: [
           {
-            title: '$MAGIC Price',
+            title: '$MAGIC',
             description: `- View on [DexScreener](https://dexscreener.com/arbitrum/${magic.pairId})\n- Trade on [SushiSwap](https://app.sushi.com/swap?inputCurrency=ETH&outputCurrency=0x539bdE0d7Dbd336b79148AA742883198BBF60342&chainId=42161)`,
             color: 0xe02424,
             fields,

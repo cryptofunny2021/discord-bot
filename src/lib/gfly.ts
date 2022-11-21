@@ -18,7 +18,7 @@ const state = proxy({
 async function fetch() {
   try {
     const pair = snapshot(pairs).pairs.find(
-      (pair) => pair.name === 'GFLY-MAGIC'
+      (pair) => pair.name === 'MAGIC-GFLY'
     )
     const { priceRaw } = snapshot(magic)
 
@@ -27,7 +27,7 @@ async function fetch() {
     }
 
     state.pairId = pair.id
-    state.tokenId = pair.token0.id
+    state.tokenId = pair.token1.id
 
     const info = snapshot(dexscreener).tokens.find(
       (info) => info.id.toLowerCase() === pair.id.toLowerCase()
@@ -45,7 +45,7 @@ async function fetch() {
       state.change24h = data.change24h
     }
 
-    state.price = round(parseFloat(pair.token0.derivedETH) * priceRaw)
+    state.price = round(parseFloat(pair.token1.derivedETH) * priceRaw)
     state.timestamp = Date.now()
   } catch (error) {
     if (error instanceof Error) {
