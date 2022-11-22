@@ -1,8 +1,8 @@
 export const pluralize = (value: number) => (value === 1 ? '' : 's')
 
-export const round = (value: number) =>
+export const round = (value: number, decimals = 5) =>
   Intl.NumberFormat('en-US', {
     currency: 'USD',
-    maximumFractionDigits: 5,
+    maximumFractionDigits: decimals,
     style: 'currency',
   }).format(value)

@@ -1,15 +1,17 @@
 import { dirname, importx } from '@discordx/importer'
-import { Interaction, Message } from 'discord.js'
+import { Events, Interaction, Message } from 'discord.js'
 import 'dotenv/config'
 import 'reflect-metadata'
 import { snapshot, subscribe } from 'valtio/vanilla'
 
 import client from './lib/client.js'
+import { croak } from './lib/croak.js'
 import * as extractors from './lib/extractors.js'
 import { message } from './lib/letmein-message.js'
 import magic from './lib/magic.js'
+import * as toadstoolz from './lib/toadstoolz.js'
 
-client.once('ready', async () => {
+client.once(Events.ClientReady, async () => {
   await client.initApplicationCommands()
 
   message()
@@ -23,16 +25,19 @@ client.once('ready', async () => {
   })
 
   extractors.listen()
+  toadstoolz.listen()
 
   console.log('Bot started!')
 })
 
-client.on('interactionCreate', (interaction: Interaction) => {
+client.on(Events.InteractionCreate, (interaction: Interaction) => {
   client.executeInteraction(interaction)
 })
 
-client.on('messageCreate', (message: Message) => {
+client.on(Events.MessageCreate, (message: Message) => {
   client.executeCommand(message)
+
+  croak(message)
 })
 
 async function run() {

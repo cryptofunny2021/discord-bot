@@ -9,6 +9,7 @@ const state = proxy({
   ath: '',
   ath_date: '',
   change24h: '',
+  eth: 0,
   high_24h: '',
   lastBuyPrice: '',
   low_24h: '',
@@ -23,7 +24,7 @@ async function fetch() {
   console.log('~> Fetching MAGIC from Treasure')
 
   try {
-    const { magicUsd } = await gotScraping(
+    const { magicEth, magicUsd } = await gotScraping(
       'https://api.treasure.lol/magic/price'
     ).json<{
       ethUsd: number
@@ -33,6 +34,7 @@ async function fetch() {
 
     state.price = round(magicUsd)
     state.priceRaw = magicUsd
+    state.eth = magicEth
 
     const info = snapshot(dexscreener).tokens.find(
       (info) => info.id.toLowerCase() === state.pairId
