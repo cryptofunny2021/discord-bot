@@ -6,6 +6,12 @@ import * as server from './server.js'
 
 const state = proxy({ croaks: 0 })
 
+const suffixes = [
+  'Toadally awesome!',
+  "Keep croakin'",
+  'Run it up the tadpole!',
+]
+
 export async function croak(message: Message) {
   if (!snapshot(state).croaks) {
     console.log('~> Fetching croaks')
@@ -33,9 +39,10 @@ export async function croak(message: Message) {
     state.croaks += 1
 
     const { croaks } = snapshot(state)
+    const suffix = suffixes[(suffixes.length * Math.random()) | 0]
 
     await message.channel.send(
-      `<:toad:1038399228239679551>  **${croaks.toLocaleString()} Croaks**, and counting! Toadally awesome!`
+      `<:toad:913690221088997376>  **${croaks.toLocaleString()} Croaks**, and counting! ${suffix}`
     )
 
     await gotScraping('https://jsonbin.org/wyze/croaks', {
