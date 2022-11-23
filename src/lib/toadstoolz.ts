@@ -24,7 +24,7 @@ async function fetch() {
     const { eth, priceRaw } = snapshot(magic)
 
     const { listing } = snapshot(state)
-    const [{ id }] = sales
+    const [, { id }] = sales
 
     state.listing = id
 
@@ -33,7 +33,7 @@ async function fetch() {
       return
     }
 
-    const index = sales.findIndex(sale => sale.id === listing)
+    const index = sales.findIndex((sale) => sale.id === listing)
 
     if (index < 1) {
       return
@@ -41,10 +41,10 @@ async function fetch() {
 
     await client.guilds.fetch()
 
-    const guild = client.guilds.cache.get(server.TOADSTOOLZ)
+    const guild = client.guilds.cache.get(server.DEV)
 
     // Sales bot channel
-    const channel = guild?.channels.cache.get('978879710329184286')
+    const channel = guild?.channels.cache.get('909968604005548032')
 
     if (channel?.type === ChannelType.GuildText) {
       await channel.send({

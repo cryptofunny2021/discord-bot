@@ -31,7 +31,7 @@ export async function croak(message: Message) {
     return
   }
 
-  if (!/\bcroak\b/.test(message.content)) {
+  if (!/\bcroak\b/i.test(message.content)) {
     return
   }
 

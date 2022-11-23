@@ -26,32 +26,46 @@ async function fetch() {
           queue.add(async () => {
             console.log('~> Fetching DexScreener for', pair.id)
 
-            const {
-              quoteTokenSymbol,
-              tradingHistory: [info],
-            } = await gotScraping(
-              `https://io.dexscreener.com/u/trading-history/recent/arbitrum/${pair.id}`
-            ).json<{
-              quoteTokenSymbol: string
-              tradingHistory: Array<{
-                blockNumber: number
-                blockTimestamp: number
-                txnHash: string
-                logIndex: number
-                type: 'buy' | 'sell'
-                priceUsd: string
-                volumeUsd: string
-                amount0: string
-                amount1: string
-              }>
-            }>()
+            try {
+              const {
+                quoteTokenSymbol,
+                tradingHistory: [info],
+              } = await gotScraping(
+                `https://io.dexscreener.com/u/trading-history/recent/arbitrum/${pair.id}`
+              ).json<{
+                quoteTokenSymbol: string
+                tradingHistory: Array<{
+                  blockNumber: number
+                  blockTimestamp: number
+                  txnHash: string
+                  logIndex: number
+                  type: 'buy' | 'sell'
+                  priceUsd: string
+                  volumeUsd: string
+                  amount0: string
+                  amount1: string
+                }>
+              }>()
 
-            const priceUsd =
-              quoteTokenSymbol === 'GFLY'
-                ? round(parseFloat(info.volumeUsd) / parseFloat(info.amount1))
-                : round(parseFloat(info.priceUsd))
+              const priceUsd =
+                quoteTokenSymbol === 'GFLY'
+                  ? round(parseFloat(info.volumeUsd) / parseFloat(info.amount1))
+                  : round(parseFloat(info.priceUsd))
 
-            return { id: pair.id, priceUsd }
+              return { id: pair.id, priceUsd }
+            } catch (error) {
+              if (error instanceof Error) {
+                const message = error.message.includes(
+                  'Unexpected token < in JSON'
+                )
+                  ? 'Invalid JSON (Likely access denied)'
+                  : error.stack
+
+                console.log('~> Error from DexScreener', message)
+              }
+
+              return { id: pair.id, priceUsd: '' }
+            }
           })
       )
     )
@@ -59,7 +73,7 @@ async function fetch() {
     state.timestamp = Date.now()
   } catch (error) {
     if (error instanceof Error) {
-      console.log(`Error fetching pairs\n${error.stack}`)
+      console.log(`Error fetching DexScreener\n${error.stack}`)
     }
   }
 }
