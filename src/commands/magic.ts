@@ -5,6 +5,12 @@ import { snapshot } from 'valtio/vanilla'
 import { InChannel } from '../lib/guards.js'
 import state from '../lib/magic.js'
 
+type APIEmbedField = {
+  inline: boolean
+  name: string
+  value: string
+}
+
 const spacer = { inline: true, name: '\u200b', value: '\u200b' }
 
 const MAGIC_LOGO =
@@ -52,7 +58,7 @@ export class Magic {
           : [],
         magic.market_cap
           ? [
-              spacer,
+              magic.lastBuyPrice ? spacer : null,
               {
                 inline: true,
                 name: 'Market Cap',
@@ -62,7 +68,7 @@ export class Magic {
           : [],
       ]
         .flat()
-        .filter(Boolean)
+        .filter((item): item is APIEmbedField => Boolean(item))
 
       await command.message.channel.send({
         embeds: [

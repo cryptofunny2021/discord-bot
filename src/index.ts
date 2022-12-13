@@ -31,7 +31,7 @@ client.once(Events.ClientReady, async () => {
   extractors.listen()
   toadstoolz.listen()
 
-  console.log('Bot started!')
+  console.log('~> Bot started!')
 })
 
 client.on(Events.InteractionCreate, (interaction: Interaction) => {
