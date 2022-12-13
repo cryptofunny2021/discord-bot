@@ -11,8 +11,8 @@ import { message } from './lib/letmein-message.js'
 import magic from './lib/magic.js'
 import * as toadstoolz from './lib/toadstoolz.js'
 
-process.on('uncaughtException', function (err) {
-  console.log('Caught exception: ' + err)
+process.on('uncaughtException', (error) => {
+  console.log(`Caught exception: ${error}`)
 })
 
 client.once(Events.ClientReady, async () => {

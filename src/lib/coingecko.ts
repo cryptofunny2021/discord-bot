@@ -16,6 +16,7 @@ const state = proxy<{
     change24h: string
     high_24h: string
     low_24h: string
+    market_cap: string
   }>
   timestamp: number
 }>({
@@ -46,6 +47,7 @@ async function fetch() {
                 ath_date: USD<string>
                 low_24h: USD<number>
                 high_24h: USD<number>
+                market_cap: USD<number>
                 price_change_percentage_24h: number
               }
             }>()
@@ -58,6 +60,7 @@ async function fetch() {
                 high_24h: '',
                 low_24h: '',
                 change24h: '',
+                market_cap: '',
               }
             }
 
@@ -74,6 +77,7 @@ async function fetch() {
               change24h: data.price_change_percentage_24h
                 ? `${data.price_change_percentage_24h.toPrecision(3)}%`
                 : '',
+              market_cap: `${round(data.market_cap.usd / 1e6, 2)}mm`,
             }
           })
         )

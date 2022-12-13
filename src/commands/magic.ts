@@ -44,8 +44,19 @@ export class Magic {
         magic.lastBuyPrice
           ? [
               {
+                inline: Boolean(magic.market_cap),
                 name: 'Last Buy Price',
                 value: magic.lastBuyPrice,
+              },
+            ]
+          : [],
+        magic.market_cap
+          ? [
+              spacer,
+              {
+                inline: true,
+                name: 'Market Cap',
+                value: magic.market_cap,
               },
             ]
           : [],

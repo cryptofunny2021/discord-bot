@@ -13,6 +13,7 @@ const state = proxy({
   high_24h: '',
   lastBuyPrice: '',
   low_24h: '',
+  market_cap: '',
   pairId: '0xb7e50106a5bd3cf21af210a755f9c8740890a8c9',
   price: '',
   priceRaw: 0,
@@ -54,6 +55,7 @@ async function fetch() {
       state.high_24h = data.high_24h
       state.low_24h = data.low_24h
       state.change24h = data.change24h
+      state.market_cap = data.market_cap
     }
 
     state.timestamp = Date.now()
