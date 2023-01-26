@@ -37,33 +37,35 @@ async function fetch() {
 
     const { __typename, ...boosts } = await client.getHarvesterExtractorBoosts()
 
-    state.data = data.map((item) => {
-      const boost = Object.entries(boosts)
-        .filter(
-          ([key, extractor]) =>
-            key === item.name.toLowerCase() &&
-            typeof extractor?.aggregate?.sum?.staked === 'number'
-        )
-        .map(
-          ([, extractor]) =>
-            `${extractor?.aggregate?.sum?.staked} extractor${pluralize(
-              extractor?.aggregate?.sum?.staked ?? 0
-            )} for ${extractor.aggregate?.sum?.boost}%`
-        )
-        .join('')
+    state.data = data
+      .filter((item) => Boolean(item.name))
+      .map((item) => {
+        const boost = Object.entries(boosts)
+          .filter(
+            ([key, extractor]) =>
+              key === item.name?.toLowerCase() &&
+              typeof extractor?.aggregate?.sum?.staked === 'number'
+          )
+          .map(
+            ([, extractor]) =>
+              `${extractor?.aggregate?.sum?.staked} extractor${pluralize(
+                extractor?.aggregate?.sum?.staked ?? 0
+              )} for ${extractor.aggregate?.sum?.boost}%`
+          )
+          .join('')
 
-      return {
-        name: item.name,
-        value: [
-          `${percent.format(item.emissionsShare)} for ${Math.round(
-            item.emissionsPerSecond * 86_400
-          ).toLocaleString()} MAGIC/day`,
-          boost,
-        ]
-          .filter(Boolean)
-          .join('\n'),
-      }
-    })
+        return {
+          name: item.name,
+          value: [
+            `${percent.format(item.emissionsShare)} for ${Math.round(
+              item.emissionsPerSecond * 86_400
+            ).toLocaleString()} MAGIC/day`,
+            boost,
+          ]
+            .filter(Boolean)
+            .join('\n'),
+        }
+      })
 
     state.timestamp = Date.now()
   } catch (error) {
