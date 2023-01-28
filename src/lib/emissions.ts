@@ -13,8 +13,7 @@ const state = proxy({
 const client = getSdk(
   new GraphQLClient(`${process.env.HASURA_URL}`, {
     headers: {
-      'x-hasura-user-id': `${process.env.HASURA_API_KEY}`,
-      'x-hasura-role': 'tressy',
+      'x-hasura-admin-secret': `${process.env.HASURA_API_KEY}`,
     },
   })
 )
@@ -35,24 +34,25 @@ async function fetch() {
       }>
     >()
 
-    const { __typename, ...boosts } = await client.getHarvesterExtractorBoosts()
+    const extractors = await client.getHarvesterExtractorBoosts()
+    const boosts = extractors.harvester_extractor_active.reduce<
+      Record<string, { boost: number; staked: number }>
+    >((acc, item) => {
+      if (!item.name || !item.boost) {
+        return acc
+      }
+
+      acc[item.name] ??= { boost: 0, staked: 0 }
+      acc[item.name].boost += item.boost
+      acc[item.name].staked++
+
+      return acc
+    }, {})
 
     state.data = data
       .filter((item) => Boolean(item.name))
       .map((item) => {
-        const boost = Object.entries(boosts)
-          .filter(
-            ([key, extractor]) =>
-              key === item.name?.toLowerCase() &&
-              typeof extractor?.aggregate?.sum?.staked === 'number'
-          )
-          .map(
-            ([, extractor]) =>
-              `${extractor?.aggregate?.sum?.staked} extractor${pluralize(
-                extractor?.aggregate?.sum?.staked ?? 0
-              )} for ${extractor.aggregate?.sum?.boost}%`
-          )
-          .join('')
+        const boost = boosts[item.name]
 
         return {
           name: item.name,
@@ -60,7 +60,11 @@ async function fetch() {
             `${percent.format(item.emissionsShare)} for ${Math.round(
               item.emissionsPerSecond * 86_400
             ).toLocaleString()} MAGIC/day`,
-            boost,
+            boost
+              ? `${boost.staked} extractor${pluralize(boost.staked)} for ${
+                  boost.boost
+                }%`
+              : null,
           ]
             .filter(Boolean)
             .join('\n'),

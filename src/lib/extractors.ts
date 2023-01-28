@@ -17,48 +17,48 @@ const images: Record<string, string> = {
 }
 
 const state = proxy({
-  blockNumber: 0,
+  vid: 0,
 })
 
 const hasura = getSdk(
   new GraphQLClient(`${process.env.HASURA_URL}`, {
     headers: {
-      'x-hasura-user-id': `${process.env.HASURA_API_KEY}`,
-      'x-hasura-role': 'tressy',
+      'x-hasura-admin-secret': `${process.env.HASURA_API_KEY}`,
     },
   })
 )
 
 async function fetch() {
   try {
-    const { harvester_extractor: data } = await hasura.getHarvesterExtractors({
-      blockNumber: state.blockNumber,
-    })
+    const { harvester_extractor_active: data } =
+      await hasura.getHarvesterExtractors({
+        vid: state.vid,
+      })
 
     if (!data[0]) {
       return
     }
 
-    const { blockNumber } = snapshot(state)
+    const { vid } = snapshot(state)
     const [{ size, ...item }] = data
 
-    state.blockNumber = item.block_number
+    state.vid = item.vid
 
     // First run, now we have a starting block number
-    if (blockNumber === 0) {
+    if (vid === 0) {
       return
     }
 
     // Group by Harvester, then build description of each
     const fields = data.reduce<Record<string, Record<string, number>>>(
       (acc, item) => {
-        if (!item.name || !item.size || !item.staked) {
-          throw new Error('No name')
+        if (!item.name || !item.size) {
+          return acc
         }
 
         acc[item.name] ??= {}
         acc[item.name][item.size] ??= 0
-        acc[item.name][item.size] += item.staked
+        acc[item.name][item.size]++
 
         return acc
       },

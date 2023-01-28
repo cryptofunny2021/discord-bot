@@ -4,8 +4,7 @@ generates:
     schema:
       - ${HASURA_URL}:
           headers:
-            x-hasura-role: tressy
-            x-hasura-user-id: ${HASURA_API_KEY}
+            x-hasura-admin-secret: ${HASURA_API_KEY}
     documents: "src/graphql/hasura/*.graphql.ts"
     plugins:
       - "typescript"
