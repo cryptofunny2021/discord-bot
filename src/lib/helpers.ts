@@ -10,6 +10,8 @@ const NUMBER_ABBREVIATION_LOOKUP = [
   { value: 1e18, symbol: 'E' },
 ]
 
+export const spacer = { inline: true, name: '\u200b', value: '\u200b' }
+
 export const pluralize = (value: number) => (value === 1 ? '' : 's')
 
 export const round = (

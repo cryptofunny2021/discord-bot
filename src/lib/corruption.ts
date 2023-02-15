@@ -1,7 +1,7 @@
 import { gotScraping } from 'got-scraping'
 import { proxy, snapshot } from 'valtio/vanilla'
 
-import { abbreviateNumber } from './helpers.js'
+import { abbreviateNumber, spacer } from './helpers.js'
 
 const state = proxy({
   data: [] as Array<Record<'name' | 'value', string>>,
@@ -23,18 +23,24 @@ async function fetch() {
       }>
     >()
 
-    state.data = data.map((item) => {
-      return {
-        name: item.name,
-        value: [
-          `Corruption: ${Math.round(
-            item.balance
-          ).toLocaleString()}/${abbreviateNumber(item.generatedCorruptionCap)}`,
-          `Rate: ${Math.round(
-            item.boostedRatePerSecond * 3600
-          ).toLocaleString()}/hour`,
-        ].join('\n'),
-      }
+    state.data = data.flatMap((item, index) => {
+      return [
+        index % 2 === 1 ? spacer : null,
+        {
+          name: item.name,
+          inline: true,
+          value: [
+            `Corruption: ${Math.round(
+              item.balance
+            ).toLocaleString()}/${abbreviateNumber(
+              item.generatedCorruptionCap
+            )}`,
+            `Rate: ${Math.round(
+              item.boostedRatePerSecond * 3600
+            ).toLocaleString()}/hour`,
+          ].join('\n'),
+        },
+      ].filter((item): item is NonNullable<typeof item> => Boolean(item))
     })
 
     state.timestamp = Date.now()
