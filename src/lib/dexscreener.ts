@@ -21,52 +21,53 @@ async function fetch() {
     const { pairs } = snapshot(pairsState)
 
     state.tokens = await Promise.all(
-      [{ id: '0xb7e50106a5bd3cf21af210a755f9c8740890a8c9' }, ...pairs].map(
-        (pair) =>
-          queue.add(async () => {
-            console.log('~> Fetching DexScreener for', pair.id)
+      [
+        { id: '0xb7e50106a5bd3cf21af210a755f9c8740890a8c9', name: '' },
+        ...pairs,
+      ].map((pair) =>
+        queue.add(async () => {
+          console.log('~> Fetching DexScreener for', pair.id)
 
-            try {
-              const {
-                quoteTokenSymbol,
-                tradingHistory: [info],
-              } = await gotScraping(
-                `https://io.dexscreener.com/u/trading-history/recent/arbitrum/${pair.id}`
-              ).json<{
-                quoteTokenSymbol: string
-                tradingHistory: Array<{
-                  blockNumber: number
-                  blockTimestamp: number
-                  txnHash: string
-                  logIndex: number
-                  type: 'buy' | 'sell'
-                  priceUsd: string
-                  volumeUsd: string
-                  amount0: string
-                  amount1: string
-                }>
-              }>()
+          try {
+            const {
+              logs: [info],
+            } = await gotScraping(
+              `https://io.dexscreener.com/dex/log/amm/uniswap/all/arbitrum/${pair.id}`
+            ).json<{
+              logs: Array<{
+                amount0: string
+                amount1: string
+                blockNumber: number
+                blockTimestamp: number
+                logIndex: number
+                logType: 'swap'
+                maker: string
+                priceUsd: string
+                txnHash: string
+                txnType: 'buy' | 'sell'
+                volumeUsd: string
+              }>
+            }>()
 
-              const priceUsd =
-                quoteTokenSymbol === 'GFLY'
-                  ? round(parseFloat(info.volumeUsd) / parseFloat(info.amount1))
-                  : round(parseFloat(info.priceUsd))
+            const priceUsd = pair.name.includes('GFLY')
+              ? round(parseFloat(info.volumeUsd) / parseFloat(info.amount1))
+              : round(parseFloat(info.priceUsd))
 
-              return { id: pair.id, priceUsd }
-            } catch (error) {
-              if (error instanceof Error) {
-                const message = error.message.includes(
-                  'Unexpected token < in JSON'
-                )
-                  ? 'Invalid JSON (Likely access denied)'
-                  : error.stack
+            return { id: pair.id, priceUsd }
+          } catch (error) {
+            if (error instanceof Error) {
+              const message = error.message.includes(
+                'Unexpected token < in JSON'
+              )
+                ? 'Invalid JSON (Likely access denied)'
+                : error.stack
 
-                console.log('~> Error from DexScreener', message)
-              }
-
-              return { id: pair.id, priceUsd: '' }
+              console.log('~> Error from DexScreener', message)
             }
-          })
+
+            return { id: pair.id, priceUsd: '' }
+          }
+        })
       )
     )
 
