@@ -3,6 +3,7 @@ import gql from 'graphql-tag'
 export const getCurrentCorruptionCrypt = gql`
   query getCurrentCorruptionCrypt {
     corruption_crypt(order_by: { round: desc }, limit: 1) {
+      needed
       reached
       round
       start_timestamp

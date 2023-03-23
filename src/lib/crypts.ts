@@ -25,12 +25,12 @@ async function fetch() {
       return
     }
 
-    const { round, reached, start_timestamp } = crypt
+    const { needed, round, reached, start_timestamp } = crypt
 
     state.data = [
       ['Round', `${round}`],
       ['Started', `<t:${new Date(start_timestamp).getTime() / 1000}:R>`],
-      ['Reached', `${reached}/200`],
+      ['Reached', `${reached}/${needed}`],
     ].map(([name, value]) => ({
       name,
       inline: true,
