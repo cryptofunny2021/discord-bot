@@ -23,15 +23,14 @@ async function fetch() {
     state.tokens = await Promise.all(
       [
         { id: '0xb7e50106a5bd3cf21af210a755f9c8740890a8c9', name: '' },
+        { id: '0xa8328bf492ba1b77ad6381b3f7567d942b000baf', name: 'ARB' },
         ...pairs,
       ].map((pair) =>
         queue.add(async () => {
           console.log('~> Fetching DexScreener for', pair.id)
 
           try {
-            const {
-              logs: [info],
-            } = await gotScraping(
+            const { logs } = await gotScraping(
               `https://io.dexscreener.com/dex/log/amm/uniswap/all/arbitrum/${pair.id}`
             ).json<{
               logs: Array<{
@@ -40,7 +39,7 @@ async function fetch() {
                 blockNumber: number
                 blockTimestamp: number
                 logIndex: number
-                logType: 'swap'
+                logType: 'swap' | 'remove' | 'add'
                 maker: string
                 priceUsd: string
                 txnHash: string
@@ -48,6 +47,8 @@ async function fetch() {
                 volumeUsd: string
               }>
             }>()
+
+            const [info] = logs.filter((log) => log.logType === 'swap')
 
             const priceUsd = pair.name.includes('GFLY')
               ? round(parseFloat(info.volumeUsd) / parseFloat(info.amount1))

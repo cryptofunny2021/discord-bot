@@ -4,7 +4,7 @@ import { proxy, snapshot } from 'valtio/vanilla'
 import coingecko from './coingecko.js'
 import dexscreener from './dexscreener.js'
 import { round } from './helpers.js'
-import lp from './sushi.js'
+// import lp from './sushi.js'
 
 const state = proxy({
   ath: '',
@@ -66,17 +66,17 @@ async function fetch() {
       state.market_cap = data.market_cap
     }
 
-    const lpInfo = snapshot(lp).tokens.find(
-      (info) => info.id.toLowerCase() === state.pairId
-    )
+    // const lpInfo = snapshot(lp).tokens.find(
+    //   (info) => info.id.toLowerCase() === state.pairId
+    // )
 
-    if (lpInfo) {
-      state.lp.apy = lpInfo.apy
-      state.lp.fees = lpInfo.fees
-      state.lp.liquidity = lpInfo.liquidity
-      state.lp.timestamp = snapshot(lp).timestamp
-      state.lp.volume = lpInfo.volume
-    }
+    // if (lpInfo) {
+    //   state.lp.apy = lpInfo.apy
+    //   state.lp.fees = lpInfo.fees
+    //   state.lp.liquidity = lpInfo.liquidity
+    //   state.lp.timestamp = snapshot(lp).timestamp
+    //   state.lp.volume = lpInfo.volume
+    // }
 
     state.timestamp = Date.now()
   } catch (error) {
