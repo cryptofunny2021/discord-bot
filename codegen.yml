@@ -34,3 +34,10 @@ generates:
       - "typescript"
       - "typescript-operations"
       - "typescript-graphql-request"
+  generated/sushi.graphql.ts:
+    schema: ${SUSHI_URL}
+    documents: "src/graphql/sushi/*.graphql.ts"
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-graphql-request"

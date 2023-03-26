@@ -31,4 +31,5 @@ jobs:
             HASURA_URL=${{ secrets.HASURA_URL }}
             MARKETPLACE_URL=https://api.thegraph.com/subgraphs/name/vinnytreasure/treasuremarketplace-fast-prod
             SNAPSHOT_URL=${{ secrets.SNAPSHOT_URL }}
-            MAGICSWAP_URL=https://api.thegraph.com/subgraphs/name/treasureproject/magicswap-exchange"
+            MAGICSWAP_URL=https://api.thegraph.com/subgraphs/name/treasureproject/magicswap-exchange
+            SUSHI_URL=https://api.thegraph.com/subgraphs/name/sushiswap/arbitrum-exchange"

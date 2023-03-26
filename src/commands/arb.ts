@@ -64,11 +64,11 @@ export class Arbitrum {
               width: 64,
             },
             footer: {
-              text: `Powered by DexScreener • ${formatDistanceToNowStrict(
+              text: `Powered by SushiSwap • ${formatDistanceToNowStrict(
                 arb.timestamp,
                 { addSuffix: true }
               )}`,
-              icon_url: 'https://dexscreener.com/favicon.png',
+              icon_url: 'https://app.sushi.com/icons/icon-96x96.png',
             },
           },
         ],

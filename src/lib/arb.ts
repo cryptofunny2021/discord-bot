@@ -1,5 +1,7 @@
+import { GraphQLClient } from 'graphql-request'
 import { proxy, snapshot } from 'valtio/vanilla'
 
+import { getSdk } from '../../generated/sushi.graphql.js'
 import dexscreener from './dexscreener.js'
 import { round } from './helpers.js'
 
@@ -12,6 +14,8 @@ const state = proxy({
   tokenId: '',
 })
 
+const sushi = getSdk(new GraphQLClient(`${process.env.SUSHI_URL}`))
+
 async function fetch() {
   try {
     const info = snapshot(dexscreener).tokens.find(
@@ -19,8 +23,12 @@ async function fetch() {
     )
 
     if (info) {
-      state.price = round(Number(info.priceUsd.slice(1)))
+      state.lastBuyPrice = round(Number(info.priceUsd.slice(1)))
     }
+
+    const data = await sushi.getArbPrice()
+
+    state.price = data.pair ? round(Number(data.pair.token1Price)) : ''
 
     state.timestamp = Date.now()
   } catch (error) {
