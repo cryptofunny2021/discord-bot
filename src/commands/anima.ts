@@ -55,7 +55,7 @@ export class Anima {
         embeds: [
           {
             title: '$ANIMA',
-            description: `- View on [DexScreener](https://dexscreener.com/arbitrum/${anima.pairId})\n- Trade on [MagicSwap](https://magicswap.lol/?input=MAGIC&output=ANIMA)`,
+            description: `- View on [DexScreener](https://dexscreener.com/arbitrum/${anima.pairId})\n- Trade on [Magicswap](https://magicswap.lol/?input=MAGIC&output=ANIMA)`,
             color: 0xe47454,
             fields,
             thumbnail: {
@@ -64,7 +64,7 @@ export class Anima {
               width: 64,
             },
             footer: {
-              text: `Powered by MagicSwap • ${formatDistanceToNowStrict(
+              text: `Powered by Magicswap • ${formatDistanceToNowStrict(
                 anima.timestamp,
                 { addSuffix: true }
               )}`,

@@ -55,7 +55,7 @@ export class GFly {
         embeds: [
           {
             title: '$gFLY',
-            description: `- View on [DexScreener](https://dexscreener.com/arbitrum/${gfly.pairId})\n- Trade on [MagicSwap](https://magicswap.lol/?input=MAGIC&output=GFLY)`,
+            description: `- View on [DexScreener](https://dexscreener.com/arbitrum/${gfly.pairId})\n- Trade on [Magicswap](https://magicswap.lol/?input=MAGIC&output=GFLY)`,
             color: 0x04ccac,
             fields,
             thumbnail: {
@@ -64,7 +64,7 @@ export class GFly {
               width: 64,
             },
             footer: {
-              text: `Powered by MagicSwap • ${formatDistanceToNowStrict(
+              text: `Powered by Magicswap • ${formatDistanceToNowStrict(
                 gfly.timestamp,
                 { addSuffix: true }
               )}`,

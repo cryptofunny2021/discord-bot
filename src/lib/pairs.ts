@@ -26,7 +26,7 @@ const state = proxy<{
 })
 
 async function fetch() {
-  console.log('~> Fetching pairs from MagicSwap')
+  console.log('~> Fetching pairs from Magicswap')
 
   try {
     const { pairs } = await sdk.getPairs()

@@ -55,7 +55,7 @@ export class Vee {
         embeds: [
           {
             title: '$VEE',
-            description: `- View on [DexScreener](https://dexscreener.com/arbitrum/${vee.pairId})\n- Trade on [MagicSwap](https://magicswap.lol/?input=MAGIC&output=VEE)`,
+            description: `- View on [DexScreener](https://dexscreener.com/arbitrum/${vee.pairId})\n- Trade on [Magicswap](https://magicswap.lol/?input=MAGIC&output=VEE)`,
             color: 0xe47454,
             fields,
             thumbnail: {
@@ -64,7 +64,7 @@ export class Vee {
               width: 64,
             },
             footer: {
-              text: `Powered by MagicSwap • ${formatDistanceToNowStrict(
+              text: `Powered by Magicswap • ${formatDistanceToNowStrict(
                 vee.timestamp,
                 { addSuffix: true }
               )}`,
