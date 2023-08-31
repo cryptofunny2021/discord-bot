@@ -137,4 +137,29 @@ for ever and ever. HODL.`,
       console.log('!engagement Error: ', error)
     }
   }
+
+  @SimpleCommand()
+  @Guard(InChannel('958963188903329792'))
+  async x(command: SimpleCommandMessage) {
+    try {
+      await command.message.channel.send({
+        embeds: [
+          {
+            description: `I woke up later than j intended because I stayed up a bit later than I meant to. Realised j hasn’t properly organised everything I needed to for an appointment so ran around gathering documents. Realised I needed to print some. Had to leave that and plan to print on the way somewhere. Then realised I’d miscalculated what time I needed to leave to get to the airport so I was running late. Grabbed an uber instead of driving so no parking and less time. Arrived at the airport at the same time my plane was supposed to take off. A very nice person at customer service sneakily put me on the next one with no charge so crisis averted. Had to print at the airport at some dodgy little kiosk thing but it worked. Flew to Sydney. Couldn’t find the consulate so was 20 minutes late for the appointment. Then had to leave anyway as they must be the only building in Australia still wearing masks. Found a little pharmacy they reckon they are doing a roaring trade in single pack masks due to all the people like me going to the consulate. Anyway, went back with my mask and to my appointment. Realised in my rush I’d left one of the documents with a fancy apostille stamp on it at home. After the appointment, back to the airport and into the lounge. Only for a quick bite and a drink for half an hour as the appointment was clearly over time. Wandered the the gate for boarding and no one was moving. Checked my pass and realised it had been delayed by an hour. Lounge was too far to go back to. The new departure time came and went and then a bit later they announced the whole flight was cancelled. Everyone rushed to the attendants, had no chance of getting in there. After about 20 minutes they announced “we’ve filled 100 seats, there aren’t any more. Good luck!” So off to find another airline. Bought a last minute ticket that got me back to Melbourne 4 hours and $400 later than intended. Everything went a bit sideways, one after the other. 
+
+
+            Oh. And when I was in the appointment the lady said “didn’t you send in everything online? Then you didn’t need to come here, we would have told you that if you’d emailed us after you applied. No need to fly here for the day.” 🤨
+            `,
+            color: 48028,
+            timestamp: '2023-08-31T13:34:00.000Z',
+            footer: {
+              text: 'X_',
+            },
+          },
+        ],
+      })
+    } catch (error) {
+      console.log('!x Error: ', error)
+    }
+  }
 }
