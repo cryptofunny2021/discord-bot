@@ -50,6 +50,13 @@ async function fetch() {
     }, {})
 
     state.data = data
+      .map((item) => {
+        if (item.address === '0xa0a89db1c899c49f98e6326b764bafcf167fc2ce') {
+          return { ...item, name: 'Atlas Void' }
+        }
+
+        return item
+      })
       .filter((item) => Boolean(item.name))
       .map((item) => {
         const boost = boosts[item.name]
