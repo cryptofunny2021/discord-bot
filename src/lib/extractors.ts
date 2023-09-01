@@ -70,7 +70,7 @@ async function fetch() {
     const guild = client.guilds.cache.get(server.TREASURE)
 
     // Tressy
-    const channel = guild?.channels.cache.get('1020605524028440676')
+    const channel = guild?.channels.cache.get('883305766231097414')
 
     if (channel?.type === ChannelType.GuildText) {
       await channel.send({
